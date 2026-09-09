@@ -16,3 +16,5 @@ Fluxo adotado:
 
 `drizzle push` não faz parte do fluxo de produção. RLS e policies detalhadas não pertencem à
 baseline 10A e serão definidas em uma etapa posterior; não há permissões públicas amplas aqui.
+O Supabase CLI é apenas o runtime PostgreSQL/Auth local e não mantém uma árvore paralela de
+migrations: a fonte de verdade permanece `src/db/schema` → `drizzle/`.

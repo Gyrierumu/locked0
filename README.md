@@ -97,6 +97,34 @@ pnpm dev
 
 As credenciais de banco e Supabase são validadas sob demanda. Assim, lint, testes e build da fundação não exigem secrets; qualquer operação que realmente use DB ou Supabase falha cedo se a configuração necessária estiver ausente.
 
+### Supabase e banco local
+
+Com Docker Desktop em execução, inicie a stack local reproduzível:
+
+```bash
+pnpm supabase:start
+npx supabase@2.117.0 status -o env
+```
+
+Mapeie os valores locais exibidos pelo segundo comando em um `.env` ou `.env.local` ignorado
+pelo Git: `DB_URL` → `DATABASE_URL`, `API_URL` → `NEXT_PUBLIC_SUPABASE_URL`, `ANON_KEY` →
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` e `SERVICE_ROLE_KEY` → `SUPABASE_SERVICE_ROLE_KEY`. Nunca
+commite esse arquivo. Depois execute:
+
+```bash
+pnpm db:migrate
+pnpm db:test
+```
+
+`db:test` ignora explicitamente a suíte runtime quando `DATABASE_URL` não está disponível; com
+a stack e as variáveis locais configuradas, executa os testes reais de PostgreSQL e Supabase Auth.
+Para encerrar os containers preservando o volume local, use `pnpm supabase:stop`.
+
+O Drizzle continua sendo o único dono das migrations em `drizzle/`. O Supabase CLI fornece
+PostgreSQL, Auth e serviços auxiliares locais, mas `supabase/migrations/` não é usado como fonte
+de verdade. Analytics está desabilitado na configuração local porque não participa da validação
+de DB/Auth nem do runtime da aplicação nesta etapa.
+
 O `pnpm-workspace.yaml` contém somente a política de builds de dependências exigida pelo pnpm 12. Não há outros packages e o projeto continua sendo um repositório single-package, não um monorepo.
 
 ## Qualidade
