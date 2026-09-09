@@ -79,7 +79,11 @@ O schema Drizzle é dividido por domínio em `src/db/schema`. O fluxo oficial é
 src/db/schema -> pnpm db:generate -> revisão em drizzle/ -> pnpm db:migrate
 ```
 
-`drizzle push` não deve ser usado para produção. Ainda não existem tabelas nem migrations porque a modelagem funcional pertence às próximas etapas.
+`drizzle push` não deve ser usado para produção. A baseline `drizzle/0000_baseline.sql` contém
+as 25 tabelas de produto congeladas na etapa 10A. O schema `auth` e sua tabela `auth.users`
+continuam pertencendo ao Supabase; o Platify mantém apenas FKs para essa identidade externa.
+Migrations futuras devem ser geradas com `pnpm db:generate`, revisadas e validadas com
+`pnpm db:check` antes de `pnpm db:migrate` no ambiente explicitamente selecionado.
 
 ## Ambiente local
 

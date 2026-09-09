@@ -1,0 +1,3459 @@
+{
+  "id": "e6be644b-8539-41de-bfa0-947bd434089d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.achievement_groups": {
+      "name": "achievement_groups",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "achievement_set_id": {
+          "name": "achievement_set_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_pack_id": {
+          "name": "content_pack_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "achievement_groups_one_base_per_set_unique": {
+          "name": "achievement_groups_one_base_per_set_unique",
+          "columns": [
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"achievement_groups\".\"type\" = 'base'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "achievement_groups_achievement_set_id_idx": {
+          "name": "achievement_groups_achievement_set_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "achievement_groups_content_pack_id_idx": {
+          "name": "achievement_groups_content_pack_id_idx",
+          "columns": [
+            {
+              "expression": "content_pack_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "achievement_groups_achievement_set_id_achievement_sets_id_fk": {
+          "name": "achievement_groups_achievement_set_id_achievement_sets_id_fk",
+          "tableFrom": "achievement_groups",
+          "tableTo": "achievement_sets",
+          "columnsFrom": [
+            "achievement_set_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "achievement_groups_content_pack_id_content_packs_id_fk": {
+          "name": "achievement_groups_content_pack_id_content_packs_id_fk",
+          "tableFrom": "achievement_groups",
+          "tableTo": "content_packs",
+          "columnsFrom": [
+            "content_pack_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "achievement_groups_achievement_set_id_position_unique": {
+          "name": "achievement_groups_achievement_set_id_position_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "achievement_set_id",
+            "position"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "achievement_groups_type_check": {
+          "name": "achievement_groups_type_check",
+          "value": "\"achievement_groups\".\"type\" in ('base', 'dlc', 'expansion', 'update', 'mode', 'other')"
+        },
+        "achievement_groups_position_check": {
+          "name": "achievement_groups_position_check",
+          "value": "\"achievement_groups\".\"position\" >= 0"
+        },
+        "achievement_groups_base_pack_check": {
+          "name": "achievement_groups_base_pack_check",
+          "value": "\"achievement_groups\".\"type\" <> 'base' or \"achievement_groups\".\"content_pack_id\" is null"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.achievement_sets": {
+      "name": "achievement_sets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region_code": {
+          "name": "region_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "external_metadata": {
+          "name": "external_metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "achievement_sets_game_id_idx": {
+          "name": "achievement_sets_game_id_idx",
+          "columns": [
+            {
+              "expression": "game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "achievement_sets_game_id_games_id_fk": {
+          "name": "achievement_sets_game_id_games_id_fk",
+          "tableFrom": "achievement_sets",
+          "tableTo": "games",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "achievement_sets_game_id_key_unique": {
+          "name": "achievement_sets_game_id_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "game_id",
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "achievement_sets_status_check": {
+          "name": "achievement_sets_status_check",
+          "value": "\"achievement_sets\".\"status\" in ('active', 'archived')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.achievements": {
+      "name": "achievements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "achievement_group_id": {
+          "name": "achievement_group_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "achievement_type": {
+          "name": "achievement_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hidden": {
+          "name": "is_hidden",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "icon_path": {
+          "name": "icon_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "external_metadata": {
+          "name": "external_metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "achievements_achievement_group_id_idx": {
+          "name": "achievements_achievement_group_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_group_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "achievements_achievement_group_id_achievement_groups_id_fk": {
+          "name": "achievements_achievement_group_id_achievement_groups_id_fk",
+          "tableFrom": "achievements",
+          "tableTo": "achievement_groups",
+          "columnsFrom": [
+            "achievement_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "achievements_group_position_unique": {
+          "name": "achievements_group_position_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "achievement_group_id",
+            "position"
+          ]
+        },
+        "achievements_group_slug_unique": {
+          "name": "achievements_group_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "achievement_group_id",
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "achievements_type_check": {
+          "name": "achievements_type_check",
+          "value": "\"achievements\".\"achievement_type\" in ('bronze', 'silver', 'gold', 'platinum', 'standard')"
+        },
+        "achievements_points_check": {
+          "name": "achievements_points_check",
+          "value": "\"achievements\".\"points\" is null or \"achievements\".\"points\" >= 0"
+        },
+        "achievements_position_check": {
+          "name": "achievements_position_check",
+          "value": "\"achievements\".\"position\" >= 0"
+        },
+        "achievements_status_check": {
+          "name": "achievements_status_check",
+          "value": "\"achievements\".\"status\" in ('active', 'archived')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.content_packs": {
+      "name": "content_packs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "release_date": {
+          "name": "release_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "content_packs_game_id_idx": {
+          "name": "content_packs_game_id_idx",
+          "columns": [
+            {
+              "expression": "game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "content_packs_game_id_games_id_fk": {
+          "name": "content_packs_game_id_games_id_fk",
+          "tableFrom": "content_packs",
+          "tableTo": "games",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "content_packs_game_id_slug_unique": {
+          "name": "content_packs_game_id_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "game_id",
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "content_packs_type_check": {
+          "name": "content_packs_type_check",
+          "value": "\"content_packs\".\"type\" in ('expansion', 'dlc', 'update', 'mode', 'other')"
+        },
+        "content_packs_status_check": {
+          "name": "content_packs_status_check",
+          "value": "\"content_packs\".\"status\" in ('active', 'archived')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.game_releases": {
+      "name": "game_releases",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform_id": {
+          "name": "platform_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "region_code": {
+          "name": "region_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "release_date": {
+          "name": "release_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "external_metadata": {
+          "name": "external_metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "game_releases_game_id_idx": {
+          "name": "game_releases_game_id_idx",
+          "columns": [
+            {
+              "expression": "game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "game_releases_platform_id_idx": {
+          "name": "game_releases_platform_id_idx",
+          "columns": [
+            {
+              "expression": "platform_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "game_releases_game_id_games_id_fk": {
+          "name": "game_releases_game_id_games_id_fk",
+          "tableFrom": "game_releases",
+          "tableTo": "games",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "game_releases_platform_id_platforms_id_fk": {
+          "name": "game_releases_platform_id_platforms_id_fk",
+          "tableFrom": "game_releases",
+          "tableTo": "platforms",
+          "columnsFrom": [
+            "platform_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "game_releases_game_id_key_unique": {
+          "name": "game_releases_game_id_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "game_id",
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.games": {
+      "name": "games",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cover_path": {
+          "name": "cover_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hero_path": {
+          "name": "hero_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "developer_name": {
+          "name": "developer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "publisher_name": {
+          "name": "publisher_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "release_date": {
+          "name": "release_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "games_slug_unique": {
+          "name": "games_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "games_slug_format_check": {
+          "name": "games_slug_format_check",
+          "value": "\"games\".\"slug\" ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'"
+        },
+        "games_status_check": {
+          "name": "games_status_check",
+          "value": "\"games\".\"status\" in ('active', 'archived')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.platforms": {
+      "name": "platforms",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "short_name": {
+          "name": "short_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon_path": {
+          "name": "icon_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "platforms_slug_unique": {
+          "name": "platforms_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.release_achievement_sets": {
+      "name": "release_achievement_sets",
+      "schema": "",
+      "columns": {
+        "game_release_id": {
+          "name": "game_release_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_set_id": {
+          "name": "achievement_set_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "release_achievement_sets_achievement_set_id_idx": {
+          "name": "release_achievement_sets_achievement_set_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "release_achievement_sets_game_release_id_game_releases_id_fk": {
+          "name": "release_achievement_sets_game_release_id_game_releases_id_fk",
+          "tableFrom": "release_achievement_sets",
+          "tableTo": "game_releases",
+          "columnsFrom": [
+            "game_release_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "release_achievement_sets_achievement_set_id_achievement_sets_id_fk": {
+          "name": "release_achievement_sets_achievement_set_id_achievement_sets_id_fk",
+          "tableFrom": "release_achievement_sets",
+          "tableTo": "achievement_sets",
+          "columnsFrom": [
+            "achievement_set_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "release_achievement_sets_pk": {
+          "name": "release_achievement_sets_pk",
+          "columns": [
+            "game_release_id",
+            "achievement_set_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.checklist_item_achievements": {
+      "name": "checklist_item_achievements",
+      "schema": "",
+      "columns": {
+        "checklist_item_id": {
+          "name": "checklist_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_id": {
+          "name": "achievement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "checklist_item_achievements_achievement_id_idx": {
+          "name": "checklist_item_achievements_achievement_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "checklist_item_achievements_checklist_item_id_checklist_items_id_fk": {
+          "name": "checklist_item_achievements_checklist_item_id_checklist_items_id_fk",
+          "tableFrom": "checklist_item_achievements",
+          "tableTo": "checklist_items",
+          "columnsFrom": [
+            "checklist_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "checklist_item_achievements_achievement_id_achievements_id_fk": {
+          "name": "checklist_item_achievements_achievement_id_achievements_id_fk",
+          "tableFrom": "checklist_item_achievements",
+          "tableTo": "achievements",
+          "columnsFrom": [
+            "achievement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "checklist_item_achievements_pk": {
+          "name": "checklist_item_achievements_pk",
+          "columns": [
+            "checklist_item_id",
+            "achievement_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.checklist_items": {
+      "name": "checklist_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "content_node_id": {
+          "name": "content_node_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'action'"
+        },
+        "is_required": {
+          "name": "is_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_missable": {
+          "name": "is_missable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "edit_revision": {
+          "name": "edit_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "retired_at": {
+          "name": "retired_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "checklist_items_content_node_id_guide_content_nodes_id_fk": {
+          "name": "checklist_items_content_node_id_guide_content_nodes_id_fk",
+          "tableFrom": "checklist_items",
+          "tableTo": "guide_content_nodes",
+          "columnsFrom": [
+            "content_node_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "checklist_items_content_node_id_unique": {
+          "name": "checklist_items_content_node_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "content_node_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "checklist_items_kind_check": {
+          "name": "checklist_items_kind_check",
+          "value": "\"checklist_items\".\"kind\" in ('action', 'collectible', 'quest', 'boss', 'choice', 'online', 'other')"
+        },
+        "checklist_items_edit_revision_check": {
+          "name": "checklist_items_edit_revision_check",
+          "value": "\"checklist_items\".\"edit_revision\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.guide_content_node_achievements": {
+      "name": "guide_content_node_achievements",
+      "schema": "",
+      "columns": {
+        "content_node_id": {
+          "name": "content_node_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_id": {
+          "name": "achievement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "guide_content_node_achievements_achievement_id_idx": {
+          "name": "guide_content_node_achievements_achievement_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_content_node_achievements_content_node_id_guide_content_nodes_id_fk": {
+          "name": "guide_content_node_achievements_content_node_id_guide_content_nodes_id_fk",
+          "tableFrom": "guide_content_node_achievements",
+          "tableTo": "guide_content_nodes",
+          "columnsFrom": [
+            "content_node_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "guide_content_node_achievements_achievement_id_achievements_id_fk": {
+          "name": "guide_content_node_achievements_achievement_id_achievements_id_fk",
+          "tableFrom": "guide_content_node_achievements",
+          "tableTo": "achievements",
+          "columnsFrom": [
+            "achievement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "guide_content_node_achievements_pk": {
+          "name": "guide_content_node_achievements_pk",
+          "columns": [
+            "content_node_id",
+            "achievement_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.guide_content_node_targets": {
+      "name": "guide_content_node_targets",
+      "schema": "",
+      "columns": {
+        "content_node_id": {
+          "name": "content_node_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guide_target_id": {
+          "name": "guide_target_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "guide_content_node_targets_guide_target_id_idx": {
+          "name": "guide_content_node_targets_guide_target_id_idx",
+          "columns": [
+            {
+              "expression": "guide_target_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_content_node_targets_content_node_id_guide_content_nodes_id_fk": {
+          "name": "guide_content_node_targets_content_node_id_guide_content_nodes_id_fk",
+          "tableFrom": "guide_content_node_targets",
+          "tableTo": "guide_content_nodes",
+          "columnsFrom": [
+            "content_node_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "guide_content_node_targets_guide_target_id_guide_targets_id_fk": {
+          "name": "guide_content_node_targets_guide_target_id_guide_targets_id_fk",
+          "tableFrom": "guide_content_node_targets",
+          "tableTo": "guide_targets",
+          "columnsFrom": [
+            "guide_target_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "guide_content_node_targets_pk": {
+          "name": "guide_content_node_targets_pk",
+          "columns": [
+            "content_node_id",
+            "guide_target_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.guide_content_nodes": {
+      "name": "guide_content_nodes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "guide_section_id": {
+          "name": "guide_section_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_scope": {
+          "name": "target_scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'all'"
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "edit_revision": {
+          "name": "edit_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "retired_at": {
+          "name": "retired_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guide_content_nodes_active_position_unique": {
+          "name": "guide_content_nodes_active_position_unique",
+          "columns": [
+            {
+              "expression": "guide_section_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"guide_content_nodes\".\"retired_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_content_nodes_guide_section_id_idx": {
+          "name": "guide_content_nodes_guide_section_id_idx",
+          "columns": [
+            {
+              "expression": "guide_section_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_content_nodes_guide_section_id_guide_sections_id_fk": {
+          "name": "guide_content_nodes_guide_section_id_guide_sections_id_fk",
+          "tableFrom": "guide_content_nodes",
+          "tableTo": "guide_sections",
+          "columnsFrom": [
+            "guide_section_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "guide_content_nodes_type_check": {
+          "name": "guide_content_nodes_type_check",
+          "value": "\"guide_content_nodes\".\"type\" in ('text', 'heading', 'alert', 'spoiler', 'image', 'video', 'list', 'table', 'link', 'checklist', 'achievement')"
+        },
+        "guide_content_nodes_target_scope_check": {
+          "name": "guide_content_nodes_target_scope_check",
+          "value": "\"guide_content_nodes\".\"target_scope\" in ('all', 'selected')"
+        },
+        "guide_content_nodes_position_check": {
+          "name": "guide_content_nodes_position_check",
+          "value": "\"guide_content_nodes\".\"position\" >= 0"
+        },
+        "guide_content_nodes_edit_revision_check": {
+          "name": "guide_content_nodes_edit_revision_check",
+          "value": "\"guide_content_nodes\".\"edit_revision\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.guide_sections": {
+      "name": "guide_sections",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "guide_step_id": {
+          "name": "guide_step_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anchor": {
+          "name": "anchor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "edit_revision": {
+          "name": "edit_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "retired_at": {
+          "name": "retired_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guide_sections_active_position_unique": {
+          "name": "guide_sections_active_position_unique",
+          "columns": [
+            {
+              "expression": "guide_step_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"guide_sections\".\"retired_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_sections_guide_step_id_idx": {
+          "name": "guide_sections_guide_step_id_idx",
+          "columns": [
+            {
+              "expression": "guide_step_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_sections_guide_step_id_guide_steps_id_fk": {
+          "name": "guide_sections_guide_step_id_guide_steps_id_fk",
+          "tableFrom": "guide_sections",
+          "tableTo": "guide_steps",
+          "columnsFrom": [
+            "guide_step_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "guide_sections_step_anchor_unique": {
+          "name": "guide_sections_step_anchor_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "guide_step_id",
+            "anchor"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "guide_sections_position_check": {
+          "name": "guide_sections_position_check",
+          "value": "\"guide_sections\".\"position\" >= 0"
+        },
+        "guide_sections_edit_revision_check": {
+          "name": "guide_sections_edit_revision_check",
+          "value": "\"guide_sections\".\"edit_revision\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.guide_steps": {
+      "name": "guide_steps",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "guide_id": {
+          "name": "guide_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anchor": {
+          "name": "anchor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_minutes_min": {
+          "name": "estimated_minutes_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_minutes_max": {
+          "name": "estimated_minutes_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "edit_revision": {
+          "name": "edit_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "retired_at": {
+          "name": "retired_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guide_steps_active_position_unique": {
+          "name": "guide_steps_active_position_unique",
+          "columns": [
+            {
+              "expression": "guide_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"guide_steps\".\"retired_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_steps_guide_id_idx": {
+          "name": "guide_steps_guide_id_idx",
+          "columns": [
+            {
+              "expression": "guide_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_steps_guide_id_guides_id_fk": {
+          "name": "guide_steps_guide_id_guides_id_fk",
+          "tableFrom": "guide_steps",
+          "tableTo": "guides",
+          "columnsFrom": [
+            "guide_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "guide_steps_guide_id_anchor_unique": {
+          "name": "guide_steps_guide_id_anchor_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "guide_id",
+            "anchor"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "guide_steps_position_check": {
+          "name": "guide_steps_position_check",
+          "value": "\"guide_steps\".\"position\" >= 0"
+        },
+        "guide_steps_edit_revision_check": {
+          "name": "guide_steps_edit_revision_check",
+          "value": "\"guide_steps\".\"edit_revision\" >= 0"
+        },
+        "guide_steps_estimated_minutes_min_check": {
+          "name": "guide_steps_estimated_minutes_min_check",
+          "value": "\"guide_steps\".\"estimated_minutes_min\" is null or \"guide_steps\".\"estimated_minutes_min\" >= 0"
+        },
+        "guide_steps_estimated_minutes_max_check": {
+          "name": "guide_steps_estimated_minutes_max_check",
+          "value": "\"guide_steps\".\"estimated_minutes_max\" is null or \"guide_steps\".\"estimated_minutes_max\" >= 0"
+        },
+        "guide_steps_estimated_minutes_range_check": {
+          "name": "guide_steps_estimated_minutes_range_check",
+          "value": "\"guide_steps\".\"estimated_minutes_min\" is null or \"guide_steps\".\"estimated_minutes_max\" is null or \"guide_steps\".\"estimated_minutes_max\" >= \"guide_steps\".\"estimated_minutes_min\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.guide_targets": {
+      "name": "guide_targets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "guide_id": {
+          "name": "guide_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_set_id": {
+          "name": "achievement_set_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_release_id": {
+          "name": "game_release_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "difficulty_rating": {
+          "name": "difficulty_rating",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_minutes_min": {
+          "name": "estimated_minutes_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_minutes_max": {
+          "name": "estimated_minutes_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minimum_playthroughs": {
+          "name": "minimum_playthroughs",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_missables": {
+          "name": "has_missables",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "requires_online": {
+          "name": "requires_online",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "difficulty_requirement": {
+          "name": "difficulty_requirement",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "supports_base_completion": {
+          "name": "supports_base_completion",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "supports_full_completion": {
+          "name": "supports_full_completion",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "edit_revision": {
+          "name": "edit_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "retired_at": {
+          "name": "retired_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guide_targets_general_identity_unique": {
+          "name": "guide_targets_general_identity_unique",
+          "columns": [
+            {
+              "expression": "guide_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"guide_targets\".\"game_release_id\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_targets_specific_identity_unique": {
+          "name": "guide_targets_specific_identity_unique",
+          "columns": [
+            {
+              "expression": "guide_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "game_release_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"guide_targets\".\"game_release_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_targets_guide_id_idx": {
+          "name": "guide_targets_guide_id_idx",
+          "columns": [
+            {
+              "expression": "guide_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_targets_achievement_set_id_idx": {
+          "name": "guide_targets_achievement_set_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guide_targets_game_release_id_idx": {
+          "name": "guide_targets_game_release_id_idx",
+          "columns": [
+            {
+              "expression": "game_release_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_targets_guide_id_guides_id_fk": {
+          "name": "guide_targets_guide_id_guides_id_fk",
+          "tableFrom": "guide_targets",
+          "tableTo": "guides",
+          "columnsFrom": [
+            "guide_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "guide_targets_achievement_set_id_achievement_sets_id_fk": {
+          "name": "guide_targets_achievement_set_id_achievement_sets_id_fk",
+          "tableFrom": "guide_targets",
+          "tableTo": "achievement_sets",
+          "columnsFrom": [
+            "achievement_set_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "guide_targets_game_release_id_game_releases_id_fk": {
+          "name": "guide_targets_game_release_id_game_releases_id_fk",
+          "tableFrom": "guide_targets",
+          "tableTo": "game_releases",
+          "columnsFrom": [
+            "game_release_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "guide_targets_difficulty_rating_check": {
+          "name": "guide_targets_difficulty_rating_check",
+          "value": "\"guide_targets\".\"difficulty_rating\" is null or \"guide_targets\".\"difficulty_rating\" between 1 and 10"
+        },
+        "guide_targets_estimated_minutes_min_check": {
+          "name": "guide_targets_estimated_minutes_min_check",
+          "value": "\"guide_targets\".\"estimated_minutes_min\" is null or \"guide_targets\".\"estimated_minutes_min\" >= 0"
+        },
+        "guide_targets_estimated_minutes_max_check": {
+          "name": "guide_targets_estimated_minutes_max_check",
+          "value": "\"guide_targets\".\"estimated_minutes_max\" is null or \"guide_targets\".\"estimated_minutes_max\" >= 0"
+        },
+        "guide_targets_estimated_minutes_range_check": {
+          "name": "guide_targets_estimated_minutes_range_check",
+          "value": "\"guide_targets\".\"estimated_minutes_min\" is null or \"guide_targets\".\"estimated_minutes_max\" is null or \"guide_targets\".\"estimated_minutes_max\" >= \"guide_targets\".\"estimated_minutes_min\""
+        },
+        "guide_targets_minimum_playthroughs_check": {
+          "name": "guide_targets_minimum_playthroughs_check",
+          "value": "\"guide_targets\".\"minimum_playthroughs\" is null or \"guide_targets\".\"minimum_playthroughs\" >= 1"
+        },
+        "guide_targets_edit_revision_check": {
+          "name": "guide_targets_edit_revision_check",
+          "value": "\"guide_targets\".\"edit_revision\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.guide_versions": {
+      "name": "guide_versions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "guide_id": {
+          "name": "guide_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version_number": {
+          "name": "version_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "snapshot_schema_version": {
+          "name": "snapshot_schema_version",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "changelog": {
+          "name": "changelog",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "snapshot": {
+          "name": "snapshot",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_draft_revision": {
+          "name": "source_draft_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_version_id": {
+          "name": "source_version_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "published_by": {
+          "name": "published_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guide_versions_source_version_id_idx": {
+          "name": "guide_versions_source_version_id_idx",
+          "columns": [
+            {
+              "expression": "source_version_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guide_versions_guide_id_guides_id_fk": {
+          "name": "guide_versions_guide_id_guides_id_fk",
+          "tableFrom": "guide_versions",
+          "tableTo": "guides",
+          "columnsFrom": [
+            "guide_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "guide_versions_source_version_id_guide_versions_id_fk": {
+          "name": "guide_versions_source_version_id_guide_versions_id_fk",
+          "tableFrom": "guide_versions",
+          "tableTo": "guide_versions",
+          "columnsFrom": [
+            "source_version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "guide_versions_published_by_users_id_fk": {
+          "name": "guide_versions_published_by_users_id_fk",
+          "tableFrom": "guide_versions",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "published_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "guide_versions_guide_id_version_number_unique": {
+          "name": "guide_versions_guide_id_version_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "guide_id",
+            "version_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "guide_versions_version_number_check": {
+          "name": "guide_versions_version_number_check",
+          "value": "\"guide_versions\".\"version_number\" >= 1"
+        },
+        "guide_versions_snapshot_schema_version_check": {
+          "name": "guide_versions_snapshot_schema_version_check",
+          "value": "\"guide_versions\".\"snapshot_schema_version\" >= 1"
+        },
+        "guide_versions_source_draft_revision_check": {
+          "name": "guide_versions_source_draft_revision_check",
+          "value": "\"guide_versions\".\"source_draft_revision\" is null or \"guide_versions\".\"source_draft_revision\" >= 0"
+        },
+        "guide_versions_changelog_check": {
+          "name": "guide_versions_changelog_check",
+          "value": "length(trim(\"guide_versions\".\"changelog\")) > 0"
+        },
+        "guide_versions_source_xor_check": {
+          "name": "guide_versions_source_xor_check",
+          "value": "(\"guide_versions\".\"source_draft_revision\" is null) <> (\"guide_versions\".\"source_version_id\" is null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.guides": {
+      "name": "guides",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "workflow_status": {
+          "name": "workflow_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "published_version_id": {
+          "name": "published_version_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "draft_revision": {
+          "name": "draft_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "structure_revision": {
+          "name": "structure_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "edit_revision": {
+          "name": "edit_revision",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "first_published_at": {
+          "name": "first_published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "outdated_at": {
+          "name": "outdated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guides_game_id_idx": {
+          "name": "guides_game_id_idx",
+          "columns": [
+            {
+              "expression": "game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guides_published_version_id_idx": {
+          "name": "guides_published_version_id_idx",
+          "columns": [
+            {
+              "expression": "published_version_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "guides_public_game_id_idx": {
+          "name": "guides_public_game_id_idx",
+          "columns": [
+            {
+              "expression": "game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"guides\".\"published_version_id\" is not null and \"guides\".\"archived_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "guides_game_id_games_id_fk": {
+          "name": "guides_game_id_games_id_fk",
+          "tableFrom": "guides",
+          "tableTo": "games",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "guides_created_by_users_id_fk": {
+          "name": "guides_created_by_users_id_fk",
+          "tableFrom": "guides",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "guides_published_version_id_guide_versions_id_fk": {
+          "name": "guides_published_version_id_guide_versions_id_fk",
+          "tableFrom": "guides",
+          "tableTo": "guide_versions",
+          "columnsFrom": [
+            "published_version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "guides_game_id_slug_unique": {
+          "name": "guides_game_id_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "game_id",
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "guides_workflow_status_check": {
+          "name": "guides_workflow_status_check",
+          "value": "\"guides\".\"workflow_status\" in ('draft', 'review')"
+        },
+        "guides_draft_revision_check": {
+          "name": "guides_draft_revision_check",
+          "value": "\"guides\".\"draft_revision\" >= 0"
+        },
+        "guides_structure_revision_check": {
+          "name": "guides_structure_revision_check",
+          "value": "\"guides\".\"structure_revision\" >= 0"
+        },
+        "guides_edit_revision_check": {
+          "name": "guides_edit_revision_check",
+          "value": "\"guides\".\"edit_revision\" >= 0"
+        },
+        "guides_publication_consistency_check": {
+          "name": "guides_publication_consistency_check",
+          "value": "(\n        (\"guides\".\"published_version_id\" is null and \"guides\".\"first_published_at\" is null)\n        or\n        (\"guides\".\"published_version_id\" is not null and \"guides\".\"first_published_at\" is not null)\n      )"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatar_path": {
+          "name": "avatar_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_user_id_users_id_fk": {
+          "name": "profiles_user_id_users_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profiles_username_unique": {
+          "name": "profiles_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "profiles_username_lowercase_check": {
+          "name": "profiles_username_lowercase_check",
+          "value": "\"profiles\".\"username\" = lower(\"profiles\".\"username\")"
+        },
+        "profiles_username_format_check": {
+          "name": "profiles_username_format_check",
+          "value": "\"profiles\".\"username\" ~ '^[a-z0-9_]{3,30}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.user_roles": {
+      "name": "user_roles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_roles_user_id_users_id_fk": {
+          "name": "user_roles_user_id_users_id_fk",
+          "tableFrom": "user_roles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_roles_pk": {
+          "name": "user_roles_pk",
+          "columns": [
+            "user_id",
+            "role"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "user_roles_role_check": {
+          "name": "user_roles_role_check",
+          "value": "\"user_roles\".\"role\" in ('author', 'editor', 'admin')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.media_assets": {
+      "name": "media_assets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "scope_game_id": {
+          "name": "scope_game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "storage_path": {
+          "name": "storage_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "original_filename": {
+          "name": "original_filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "byte_size": {
+          "name": "byte_size",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "width": {
+          "name": "width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "checksum_sha256": {
+          "name": "checksum_sha256",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "credit": {
+          "name": "credit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_published_at": {
+          "name": "first_published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retired_at": {
+          "name": "retired_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "media_assets_scope_game_id_idx": {
+          "name": "media_assets_scope_game_id_idx",
+          "columns": [
+            {
+              "expression": "scope_game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "media_assets_scope_game_id_games_id_fk": {
+          "name": "media_assets_scope_game_id_games_id_fk",
+          "tableFrom": "media_assets",
+          "tableTo": "games",
+          "columnsFrom": [
+            "scope_game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "media_assets_created_by_users_id_fk": {
+          "name": "media_assets_created_by_users_id_fk",
+          "tableFrom": "media_assets",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "media_assets_storage_path_unique": {
+          "name": "media_assets_storage_path_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "storage_path"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "media_assets_byte_size_check": {
+          "name": "media_assets_byte_size_check",
+          "value": "\"media_assets\".\"byte_size\" > 0"
+        },
+        "media_assets_width_check": {
+          "name": "media_assets_width_check",
+          "value": "\"media_assets\".\"width\" is null or \"media_assets\".\"width\" > 0"
+        },
+        "media_assets_height_check": {
+          "name": "media_assets_height_check",
+          "value": "\"media_assets\".\"height\" is null or \"media_assets\".\"height\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.user_achievement_progress": {
+      "name": "user_achievement_progress",
+      "schema": "",
+      "columns": {
+        "user_completion_id": {
+          "name": "user_completion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_id": {
+          "name": "achievement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "earned_at": {
+          "name": "earned_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'manual'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_achievement_progress_completion_id_idx": {
+          "name": "user_achievement_progress_completion_id_idx",
+          "columns": [
+            {
+              "expression": "user_completion_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_achievement_progress_achievement_id_idx": {
+          "name": "user_achievement_progress_achievement_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_achievement_progress_user_completion_id_user_completions_id_fk": {
+          "name": "user_achievement_progress_user_completion_id_user_completions_id_fk",
+          "tableFrom": "user_achievement_progress",
+          "tableTo": "user_completions",
+          "columnsFrom": [
+            "user_completion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_achievement_progress_achievement_id_achievements_id_fk": {
+          "name": "user_achievement_progress_achievement_id_achievements_id_fk",
+          "tableFrom": "user_achievement_progress",
+          "tableTo": "achievements",
+          "columnsFrom": [
+            "achievement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_achievement_progress_pk": {
+          "name": "user_achievement_progress_pk",
+          "columns": [
+            "user_completion_id",
+            "achievement_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "user_achievement_progress_source_check": {
+          "name": "user_achievement_progress_source_check",
+          "value": "\"user_achievement_progress\".\"source\" in ('manual', 'playstation', 'xbox', 'steam', 'admin', 'other')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.user_checklist_progress": {
+      "name": "user_checklist_progress",
+      "schema": "",
+      "columns": {
+        "user_guide_progress_id": {
+          "name": "user_guide_progress_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checklist_item_id": {
+          "name": "checklist_item_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_checklist_progress_guide_progress_id_idx": {
+          "name": "user_checklist_progress_guide_progress_id_idx",
+          "columns": [
+            {
+              "expression": "user_guide_progress_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_checklist_progress_checklist_item_id_idx": {
+          "name": "user_checklist_progress_checklist_item_id_idx",
+          "columns": [
+            {
+              "expression": "checklist_item_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_checklist_progress_user_guide_progress_id_user_guide_progress_id_fk": {
+          "name": "user_checklist_progress_user_guide_progress_id_user_guide_progress_id_fk",
+          "tableFrom": "user_checklist_progress",
+          "tableTo": "user_guide_progress",
+          "columnsFrom": [
+            "user_guide_progress_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_checklist_progress_checklist_item_id_checklist_items_id_fk": {
+          "name": "user_checklist_progress_checklist_item_id_checklist_items_id_fk",
+          "tableFrom": "user_checklist_progress",
+          "tableTo": "checklist_items",
+          "columnsFrom": [
+            "checklist_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_checklist_progress_pk": {
+          "name": "user_checklist_progress_pk",
+          "columns": [
+            "user_guide_progress_id",
+            "checklist_item_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_completions": {
+      "name": "user_completions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_set_id": {
+          "name": "achievement_set_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "goal": {
+          "name": "goal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'base'"
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "base_completed_at": {
+          "name": "base_completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "full_completed_at": {
+          "name": "full_completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_completions_user_id_idx": {
+          "name": "user_completions_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_completions_achievement_set_id_idx": {
+          "name": "user_completions_achievement_set_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_completions_user_id_users_id_fk": {
+          "name": "user_completions_user_id_users_id_fk",
+          "tableFrom": "user_completions",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_completions_achievement_set_id_achievement_sets_id_fk": {
+          "name": "user_completions_achievement_set_id_achievement_sets_id_fk",
+          "tableFrom": "user_completions",
+          "tableTo": "achievement_sets",
+          "columnsFrom": [
+            "achievement_set_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_completions_user_set_unique": {
+          "name": "user_completions_user_set_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "achievement_set_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "user_completions_goal_check": {
+          "name": "user_completions_goal_check",
+          "value": "\"user_completions\".\"goal\" in ('base', 'full')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.user_guide_progress": {
+      "name": "user_guide_progress",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guide_target_id": {
+          "name": "guide_target_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_set_id": {
+          "name": "achievement_set_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_completion_id": {
+          "name": "user_completion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_activity_at": {
+          "name": "last_activity_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_step_id": {
+          "name": "last_step_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_section_id": {
+          "name": "last_section_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_content_node_id": {
+          "name": "last_content_node_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_guide_progress_user_id_idx": {
+          "name": "user_guide_progress_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_guide_progress_guide_target_id_idx": {
+          "name": "user_guide_progress_guide_target_id_idx",
+          "columns": [
+            {
+              "expression": "guide_target_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_guide_progress_achievement_set_id_idx": {
+          "name": "user_guide_progress_achievement_set_id_idx",
+          "columns": [
+            {
+              "expression": "achievement_set_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_guide_progress_completion_id_idx": {
+          "name": "user_guide_progress_completion_id_idx",
+          "columns": [
+            {
+              "expression": "user_completion_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_guide_progress_last_activity_at_idx": {
+          "name": "user_guide_progress_last_activity_at_idx",
+          "columns": [
+            {
+              "expression": "last_activity_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_guide_progress_user_activity_idx": {
+          "name": "user_guide_progress_user_activity_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "last_activity_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_guide_progress_user_id_users_id_fk": {
+          "name": "user_guide_progress_user_id_users_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_guide_progress_guide_target_id_guide_targets_id_fk": {
+          "name": "user_guide_progress_guide_target_id_guide_targets_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "guide_targets",
+          "columnsFrom": [
+            "guide_target_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "user_guide_progress_achievement_set_id_achievement_sets_id_fk": {
+          "name": "user_guide_progress_achievement_set_id_achievement_sets_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "achievement_sets",
+          "columnsFrom": [
+            "achievement_set_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "user_guide_progress_user_completion_id_user_completions_id_fk": {
+          "name": "user_guide_progress_user_completion_id_user_completions_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "user_completions",
+          "columnsFrom": [
+            "user_completion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_guide_progress_last_step_id_guide_steps_id_fk": {
+          "name": "user_guide_progress_last_step_id_guide_steps_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "guide_steps",
+          "columnsFrom": [
+            "last_step_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "user_guide_progress_last_section_id_guide_sections_id_fk": {
+          "name": "user_guide_progress_last_section_id_guide_sections_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "guide_sections",
+          "columnsFrom": [
+            "last_section_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "user_guide_progress_last_content_node_id_guide_content_nodes_id_fk": {
+          "name": "user_guide_progress_last_content_node_id_guide_content_nodes_id_fk",
+          "tableFrom": "user_guide_progress",
+          "tableTo": "guide_content_nodes",
+          "columnsFrom": [
+            "last_content_node_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_guide_progress_user_target_unique": {
+          "name": "user_guide_progress_user_target_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "guide_target_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
