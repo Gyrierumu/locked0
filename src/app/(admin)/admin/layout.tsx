@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { brand } from "@/config/brand";
 import { routes } from "@/config/routes";
 import { canAccessAdmin } from "@/modules/identity/contracts";
 import { getOptionalActor } from "@/modules/identity/server";
@@ -11,8 +12,8 @@ import { AdminShell } from "./_components/admin-shell";
 
 export const metadata: Metadata = {
   title: {
-    default: "Admin",
-    template: "%s | Platify Admin",
+    default: `${brand.name} Admin`,
+    template: `%s | ${brand.name} Admin`,
   },
 };
 

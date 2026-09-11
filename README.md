@@ -1,8 +1,8 @@
-# Platify
+# LOCKED:0
 
-Fundação arquitetural do Platify em Next.js 16, organizada como monólito modular com DDD pragmático. Esta etapa estabelece diretórios, fronteiras e tooling; catálogo, Guide Studio, progresso e demais funcionalidades de produto ainda não estão implementados.
+Every achievement. Nothing locked.
 
-![Referência visual da marca Platify](./public/brand/platify-brand-reference.png)
+Fundação arquitetural do LOCKED:0 em Next.js 16, organizada como monólito modular com DDD pragmático. Esta etapa estabelece diretórios, fronteiras e tooling; catálogo, Guide Studio, progresso e demais funcionalidades de produto ainda não estão implementados.
 
 ## Stack
 
@@ -81,7 +81,7 @@ src/db/schema -> pnpm db:generate -> revisão em drizzle/ -> pnpm db:migrate
 
 `drizzle push` não deve ser usado para produção. A baseline `drizzle/0000_baseline.sql` contém
 as 25 tabelas de produto congeladas na etapa 10A. O schema `auth` e sua tabela `auth.users`
-continuam pertencendo ao Supabase; o Platify mantém apenas FKs para essa identidade externa.
+continuam pertencendo ao Supabase; o LOCKED:0 mantém apenas FKs para essa identidade externa.
 Migrations futuras devem ser geradas com `pnpm db:generate`, revisadas e validadas com
 `pnpm db:check` antes de `pnpm db:migrate` no ambiente explicitamente selecionado.
 

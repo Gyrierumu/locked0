@@ -1,7 +1,8 @@
 import { clientEnv } from "@/config/env.client";
+import { brand } from "@/config/brand";
 
 export const siteConfig = {
-  name: "Platify",
-  description: "Guias e progresso para quem leva jogos a sério.",
+  name: brand.name,
+  description: brand.tagline,
   url: clientEnv.siteUrl,
 } as const;

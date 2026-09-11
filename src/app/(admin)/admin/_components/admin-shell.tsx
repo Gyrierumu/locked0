@@ -11,6 +11,8 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { Locked0Symbol } from "@/components/brand/locked0-logo";
+import { brand } from "@/config/brand";
 import { routes } from "@/config/routes";
 import type { CurrentActor, PlatifyRole } from "@/modules/identity/contracts";
 
@@ -68,16 +70,18 @@ export function AdminShell({ actor, children }: AdminShellProps) {
       <header className="flex min-h-16 items-center gap-4 border-b border-border bg-card px-4 sm:px-6">
         <Link
           href={routes.admin}
-          className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-          aria-label="Platify Admin — visão geral"
+          className="flex shrink-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          aria-label={`${brand.name} Admin — visão geral`}
         >
           <span
             aria-hidden="true"
-            className="grid size-8 place-items-center rounded-lg bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground"
+            className="inline-flex size-9 items-center justify-center overflow-hidden rounded-lg bg-white p-1 shadow-sm ring-1 ring-black/5"
           >
-            P
+            <Locked0Symbol alt="" className="size-full" />
           </span>
-          <span className="hidden text-sm font-semibold tracking-wide sm:inline">PLATIFY ADMIN</span>
+          <span className="hidden text-xs font-semibold tracking-[0.14em] sm:inline sm:text-sm">
+            {brand.name} ADMIN
+          </span>
         </Link>
 
         <div className="ml-auto flex min-w-0 items-center gap-3 sm:gap-4">
@@ -91,7 +95,7 @@ export function AdminShell({ actor, children }: AdminShellProps) {
             <button
               type="submit"
               className="inline-flex size-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-              aria-label="Sair do Platify Admin"
+              aria-label={`Sair do ${brand.name} Admin`}
               title="Sair"
             >
               <LogOut className="size-4" aria-hidden="true" />
@@ -149,7 +153,7 @@ export function AdminShell({ actor, children }: AdminShellProps) {
             className="mt-8 flex min-h-9 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/50 lg:mt-12"
           >
             <ArrowLeft className="size-4" aria-hidden="true" />
-            Platify
+            {brand.name}
           </Link>
         </aside>
 

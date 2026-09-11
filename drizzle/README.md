@@ -1,6 +1,6 @@
 # Drizzle migrations
 
-Este é o único diretório de migrations SQL do PostgreSQL da Platify.
+Este é o único diretório de migrations SQL do PostgreSQL do LOCKED:0.
 
 `0000_baseline.sql` é a baseline inicial das 25 tabelas pertencentes ao produto. A tabela
 `auth.users` pertence ao Supabase: o schema Drizzle apenas a referencia e nenhuma migration
