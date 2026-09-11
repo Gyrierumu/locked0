@@ -127,6 +127,24 @@ de DB/Auth nem do runtime da aplicação nesta etapa.
 
 O `pnpm-workspace.yaml` contém somente a política de builds de dependências exigida pelo pnpm 12. Não há outros packages e o projeto continua sendo um repositório single-package, não um monorepo.
 
+## Bootstrap do primeiro administrador
+
+No MVP, `public.user_roles` é a fonte autoritativa do RBAC. Não há e-mail privilegiado em
+variável de ambiente, role embutida no JWT ou tela para promover usuários. Para conceder o
+primeiro acesso administrativo:
+
+1. crie a conta pelo painel do Supabase Auth (ou pelo fluxo operacional equivalente);
+2. copie o UUID do usuário criado, sem registrar senha ou token no repositório;
+3. execute no ambiente explicitamente selecionado:
+
+```sql
+INSERT INTO public.user_roles (user_id, role)
+VALUES ('<auth-user-uuid>', 'admin');
+```
+
+O perfil em `public.profiles` é opcional para esse acesso. Revogar a linha de role passa a valer
+na próxima verificação server-side, pois as roles são lidas do banco a cada resolução do Actor.
+
 ## Qualidade
 
 ```bash

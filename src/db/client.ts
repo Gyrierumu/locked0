@@ -8,7 +8,7 @@ import * as schema from "@/db/schema";
 
 function createConnection() {
   const { databaseUrl } = getDatabaseEnv();
-  const sql = postgres(databaseUrl, { prepare: false });
+  const sql = postgres(databaseUrl, { max: 1, prepare: false });
   const db = drizzle(sql, { schema });
 
   return { db, sql };

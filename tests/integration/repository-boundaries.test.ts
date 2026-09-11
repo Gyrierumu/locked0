@@ -118,6 +118,19 @@ describe("repository boundaries", () => {
     expect(violations, failureMessage(violations)).toEqual([]);
   });
 
+  it("keeps Identity runtime adapters and its public server API server-only", () => {
+    const protectedFiles = sourceFiles.filter(
+      ({ relativePath }) =>
+        relativePath === "src/modules/identity/server.ts" ||
+        relativePath.startsWith("src/modules/identity/infrastructure/"),
+    );
+    const violations = protectedFiles
+      .filter(({ content }) => !/^import ["']server-only["'];/m.test(content))
+      .map(({ relativePath }) => relativePath);
+
+    expect(violations, failureMessage(violations)).toEqual([]);
+  });
+
   it("centralizes environment access", () => {
     const allowedFiles = new Set(["src/config/env.client.ts", "src/config/env.server.ts"]);
     const violations = sourceFiles

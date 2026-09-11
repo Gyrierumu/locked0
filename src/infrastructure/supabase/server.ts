@@ -18,7 +18,7 @@ export async function createSupabaseServerClient() {
             cookieStore.set(name, value, options);
           }
         } catch {
-          // Server Components cannot persist cookies. A future proxy may refresh them.
+          // Server Components cannot persist cookies; proxy.ts owns request-time refreshes.
         }
       },
     },

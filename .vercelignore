@@ -1,0 +1,7 @@
+# Local environment files must not be uploaded to Vercel.
+.env
+.env.*
+!.env.example
+
+# Supabase CLI local state.
+supabase/.temp

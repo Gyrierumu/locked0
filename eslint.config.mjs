@@ -7,7 +7,9 @@ const sourceFiles = "**/*.{ts,tsx}";
 const restriction = (patterns) => [
   "error",
   {
-    patterns,
+    patterns: patterns.map((pattern) =>
+      typeof pattern === "string" ? { group: [pattern] } : pattern,
+    ),
   },
 ];
 
