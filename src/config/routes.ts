@@ -8,4 +8,10 @@ export const routes = {
   dashboard: "/dashboard",
   settings: "/configuracoes",
   admin: "/admin",
+  adminGames: "/admin/jogos",
+  adminGameNew: "/admin/jogos/novo",
+  adminGame: (gameId: string) => `/admin/jogos/${gameId}`,
+  adminGameReleases: (gameId: string) => `/admin/jogos/${gameId}/releases`,
+  adminGameContentPacks: (gameId: string) => `/admin/jogos/${gameId}/content-packs`,
+  adminPlatforms: "/admin/plataformas",
 } as const;

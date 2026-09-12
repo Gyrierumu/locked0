@@ -17,6 +17,7 @@ import { routes } from "@/config/routes";
 import type { CurrentActor, PlatifyRole } from "@/modules/identity/contracts";
 
 import { logoutAction } from "../actions";
+import { AdminNavLink } from "./admin-nav-link.client";
 
 type AdminShellProps = Readonly<{
   actor: CurrentActor;
@@ -28,12 +29,6 @@ const roleLabel: Readonly<Record<PlatifyRole, string>> = {
   editor: "EDITOR",
   admin: "ADMIN",
 };
-
-const plannedItems = [
-  { label: "Games", icon: Gamepad2 },
-  { label: "Platforms", icon: MonitorCog },
-  { label: "Achievements", icon: Medal },
-] as const;
 
 function ActorLabel({ actor }: Readonly<{ actor: CurrentActor }>) {
   return (
@@ -108,14 +103,10 @@ export function AdminShell({ actor, children }: AdminShellProps) {
         <aside className="border-b border-border bg-sidebar px-4 py-5 lg:border-r lg:border-b-0">
           <nav aria-label="Navegação administrativa" className="space-y-6">
             <div>
-              <Link
-                href={routes.admin}
-                aria-current="page"
-                className="flex min-h-9 items-center gap-3 rounded-md bg-sidebar-accent px-3 text-sm font-medium text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/50"
-              >
+              <AdminNavLink href={routes.admin} exact>
                 <LayoutDashboard className="size-4" aria-hidden="true" />
                 Overview
-              </Link>
+              </AdminNavLink>
             </div>
 
             <div>
@@ -123,9 +114,15 @@ export function AdminShell({ actor, children }: AdminShellProps) {
                 Content
               </p>
               <div className="mt-2 space-y-1">
-                {plannedItems.map((item) => (
-                  <PlannedItem key={item.label} {...item} />
-                ))}
+                <AdminNavLink href={routes.adminGames}>
+                  <Gamepad2 className="size-4" aria-hidden="true" />
+                  Jogos
+                </AdminNavLink>
+                <AdminNavLink href={routes.adminPlatforms}>
+                  <MonitorCog className="size-4" aria-hidden="true" />
+                  Plataformas
+                </AdminNavLink>
+                <PlannedItem label="Achievements" icon={Medal} />
               </div>
             </div>
 

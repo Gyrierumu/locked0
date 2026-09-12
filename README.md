@@ -2,7 +2,10 @@
 
 Every achievement. Nothing locked.
 
-Fundação arquitetural do LOCKED:0 em Next.js 16, organizada como monólito modular com DDD pragmático. Esta etapa estabelece diretórios, fronteiras e tooling; catálogo, Guide Studio, progresso e demais funcionalidades de produto ainda não estão implementados.
+LOCKED:0 em Next.js 16, organizado como monólito modular com DDD pragmático. A fundação,
+Database Baseline, Identity/RBAC e o Catalog Admin para Games, Platforms, Releases e Content
+Packs estão implementados. Guide Studio, progresso e demais áreas editoriais continuam fora deste
+escopo.
 
 ## Stack
 

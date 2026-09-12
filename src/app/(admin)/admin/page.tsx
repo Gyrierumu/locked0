@@ -1,4 +1,8 @@
 import { Check, Database, KeyRound, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+
+import { buttonVariants } from "@/components/ui/button";
+import { routes } from "@/config/routes";
 
 const foundations = [
   {
@@ -31,8 +35,8 @@ export default function AdminOverviewPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Admin ativo</h1>
           <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-            A identidade e a função efetiva desta sessão estão confirmadas no cabeçalho. A
-            fundação do catálogo está pronta para as próximas etapas editoriais.
+            A identidade e a função efetiva desta sessão estão confirmadas no cabeçalho. Games,
+            Platforms, Releases e Content Packs já podem ser operados conforme sua permissão.
           </p>
         </div>
         <span className="inline-flex w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs font-medium">
@@ -64,6 +68,23 @@ export default function AdminOverviewPage() {
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="catalog-heading" className="mt-8 border-t border-border pt-8">
+        <h2 id="catalog-heading" className="text-sm font-semibold">
+          Catalog Admin
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+          Comece pela lista de jogos ou configure as plataformas disponíveis para releases.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href={routes.adminGames} className={buttonVariants()}>
+            Abrir jogos
+          </Link>
+          <Link href={routes.adminPlatforms} className={buttonVariants({ variant: "outline" })}>
+            Abrir plataformas
+          </Link>
         </div>
       </section>
     </div>
