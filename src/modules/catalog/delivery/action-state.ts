@@ -9,3 +9,11 @@ export const initialCatalogFormState: CatalogFormState = {
   message: null,
 };
 
+export type AchievementPasteFormState = CatalogFormState &
+  Readonly<{
+    preview?: import("../contracts").AchievementPastePreview;
+    input?: Readonly<{ targetGroupId: string; text: string }>;
+  }>;
+
+export const initialAchievementPasteFormState: AchievementPasteFormState =
+  initialCatalogFormState;

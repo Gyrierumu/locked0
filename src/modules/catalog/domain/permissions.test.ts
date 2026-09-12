@@ -17,18 +17,21 @@ const expectations: ReadonlyArray<
   ["author", "manage_platform", false],
   ["author", "manage_release", false],
   ["author", "manage_content_pack", false],
+  ["author", "manage_achievement", false],
   ["editor", "read", true],
   ["editor", "manage_game", true],
   ["editor", "manage_game_lifecycle", false],
   ["editor", "manage_platform", false],
   ["editor", "manage_release", true],
   ["editor", "manage_content_pack", true],
+  ["editor", "manage_achievement", true],
   ["admin", "read", true],
   ["admin", "manage_game", true],
   ["admin", "manage_game_lifecycle", true],
   ["admin", "manage_platform", true],
   ["admin", "manage_release", true],
   ["admin", "manage_content_pack", true],
+  ["admin", "manage_achievement", true],
 ];
 
 describe("catalog permissions", () => {
@@ -46,7 +49,7 @@ describe("catalog permissions", () => {
       canManagePlatforms: false,
       canManageReleases: true,
       canManageContentPacks: true,
+      canManageAchievements: true,
     });
   });
 });
-

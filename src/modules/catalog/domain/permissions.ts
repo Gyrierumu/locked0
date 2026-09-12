@@ -7,7 +7,8 @@ export type CatalogOperation =
   | "manage_game_lifecycle"
   | "manage_platform"
   | "manage_release"
-  | "manage_content_pack";
+  | "manage_content_pack"
+  | "manage_achievement";
 
 export type CatalogCapabilities = Readonly<{
   canRead: boolean;
@@ -16,6 +17,7 @@ export type CatalogCapabilities = Readonly<{
   canManagePlatforms: boolean;
   canManageReleases: boolean;
   canManageContentPacks: boolean;
+  canManageAchievements: boolean;
 }>;
 
 const LEVEL: Readonly<Record<CatalogRole, number>> = {
@@ -31,6 +33,7 @@ const REQUIRED_LEVEL: Readonly<Record<CatalogOperation, number>> = {
   manage_platform: LEVEL.admin,
   manage_release: LEVEL.editor,
   manage_content_pack: LEVEL.editor,
+  manage_achievement: LEVEL.editor,
 };
 
 function roleLevel(roles: readonly CatalogRole[]): number {
@@ -61,6 +64,6 @@ export function getCatalogCapabilities(roles: readonly CatalogRole[]): CatalogCa
     canManagePlatforms: canPerformCatalogOperation(roles, "manage_platform"),
     canManageReleases: canPerformCatalogOperation(roles, "manage_release"),
     canManageContentPacks: canPerformCatalogOperation(roles, "manage_content_pack"),
+    canManageAchievements: canPerformCatalogOperation(roles, "manage_achievement"),
   };
 }
-

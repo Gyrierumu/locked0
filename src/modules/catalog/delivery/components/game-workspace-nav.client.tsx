@@ -12,6 +12,7 @@ export function GameWorkspaceNav({ gameId }: Readonly<{ gameId: string }>) {
     { href: routes.adminGame(gameId), label: "Overview" },
     { href: routes.adminGameReleases(gameId), label: "Releases" },
     { href: routes.adminGameContentPacks(gameId), label: "Content Packs" },
+    { href: routes.adminGameAchievementSets(gameId), label: "Achievement Sets" },
   ];
 
   return (
@@ -34,10 +35,7 @@ export function GameWorkspaceNav({ gameId }: Readonly<{ gameId: string }>) {
           </Link>
         );
       })}
-      {[
-        ["Achievement Sets", "Em breve"],
-        ["Guides", "Em breve"],
-      ].map(([label, note]) => (
+      {[["Guides", "Em breve"]].map(([label, note]) => (
         <span
           key={label}
           aria-disabled="true"
@@ -49,4 +47,3 @@ export function GameWorkspaceNav({ gameId }: Readonly<{ gameId: string }>) {
     </nav>
   );
 }
-

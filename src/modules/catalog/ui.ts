@@ -1,8 +1,12 @@
 export { ContentPackList } from "./delivery/components/content-pack-list";
+export { AchievementGroupList } from "./delivery/components/achievement-group-list";
+export { AchievementManager } from "./delivery/components/achievement-manager";
+export { AchievementSetList } from "./delivery/components/achievement-set-list";
+export { AchievementSetOverview } from "./delivery/components/achievement-set-overview";
+export { AchievementSetWorkspace } from "./delivery/components/achievement-set-workspace";
 export { GameForm } from "./delivery/components/game-form.client";
 export { GameList } from "./delivery/components/game-list";
 export { GameOverview } from "./delivery/components/game-overview";
 export { GameWorkspace } from "./delivery/components/game-workspace";
 export { PlatformList } from "./delivery/components/platform-list";
 export { ReleaseList } from "./delivery/components/release-list";
-

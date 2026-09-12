@@ -8,7 +8,8 @@ export async function getVerifiedIdentity(): Promise<VerifiedIdentity | null> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getClaims();
 
-  if (error || !data?.claims.sub) return null;
+  if (error) throw new IdentityProviderError();
+  if (!data?.claims.sub) return null;
 
   const email = data.claims.email;
 

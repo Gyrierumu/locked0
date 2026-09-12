@@ -4,7 +4,10 @@ type PersistenceOperation =
   | "game"
   | "platform"
   | "release"
-  | "content_pack";
+  | "content_pack"
+  | "achievement_set"
+  | "achievement_group"
+  | "achievement";
 
 type ErrorDetails = Readonly<{
   code: string | null;
@@ -54,9 +57,27 @@ export function mapCatalogPersistenceError(
     ) {
       throw new CatalogError("duplicate_content_pack_slug");
     }
+    if (constraint === "achievement_sets_game_id_key_unique" || operation === "achievement_set") {
+      throw new CatalogError("duplicate_achievement_set_key");
+    }
+    if (constraint === "achievement_groups_one_base_per_set_unique") {
+      throw new CatalogError("duplicate_base_group");
+    }
+    if (constraint === "achievement_groups_achievement_set_id_position_unique") {
+      throw new CatalogError("duplicate_group_position");
+    }
+    if (constraint === "achievements_group_slug_unique") {
+      throw new CatalogError("duplicate_achievement_slug");
+    }
+    if (constraint === "achievements_group_position_unique") {
+      throw new CatalogError("duplicate_achievement_position");
+    }
+  }
+
+  if (code === "23514" && operation === "achievement_group") {
+    throw new CatalogError("base_group_content_pack");
   }
 
   if (code === "23503") throw new CatalogError("not_found");
   throw error;
 }
-
