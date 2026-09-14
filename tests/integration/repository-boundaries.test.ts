@@ -131,6 +131,28 @@ describe("repository boundaries", () => {
     expect(violations, failureMessage(violations)).toEqual([]);
   });
 
+  it("keeps Media runtime adapters and its public server API server-only", () => {
+    const protectedFiles = sourceFiles.filter(
+      ({ relativePath }) =>
+        relativePath === "src/modules/media/server.ts" ||
+        relativePath.startsWith("src/modules/media/infrastructure/") ||
+        relativePath === "src/infrastructure/storage/media-storage.server.ts",
+    );
+    const violations = protectedFiles
+      .filter(({ relativePath }) => !relativePath.endsWith(".test.ts"))
+      .filter(({ content }) => !/^import ["']server-only["'];/m.test(content))
+      .map(({ relativePath }) => relativePath);
+    expect(violations, failureMessage(violations)).toEqual([]);
+  });
+
+  it("centralizes Supabase Storage calls in infrastructure/storage", () => {
+    const violations = sourceFiles
+      .filter(({ content }) => content.includes(".storage") && content.includes("@supabase"))
+      .filter(({ relativePath }) => !relativePath.startsWith("src/infrastructure/storage/"))
+      .map(({ relativePath }) => relativePath);
+    expect(violations, failureMessage(violations)).toEqual([]);
+  });
+
   it("centralizes environment access", () => {
     const allowedFiles = new Set(["src/config/env.client.ts", "src/config/env.server.ts"]);
     const violations = sourceFiles

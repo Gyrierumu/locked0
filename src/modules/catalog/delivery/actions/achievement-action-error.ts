@@ -3,6 +3,7 @@ import {
   IdentityProviderError,
   UnauthenticatedError,
 } from "@/modules/identity/contracts";
+import { MediaError } from "@/modules/media/contracts";
 
 import { CatalogError } from "../../domain/errors";
 import type { CatalogFormState } from "../action-state";
@@ -14,6 +15,9 @@ export function achievementActionError(
   report: ErrorReporter = console.error,
 ): CatalogFormState {
   if (error instanceof CatalogError) {
+    return { status: "error", message: error.message };
+  }
+  if (error instanceof MediaError) {
     return { status: "error", message: error.message };
   }
   if (error instanceof ForbiddenError) {

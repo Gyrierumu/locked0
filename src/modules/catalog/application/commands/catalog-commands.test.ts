@@ -14,12 +14,18 @@ import type { CatalogRepository } from "../ports/catalog-repository";
 import {
   archiveContentPack,
   archiveGame,
+  clearGameCover,
+  clearGameHero,
+  clearPlatformIcon,
   createContentPack,
   createGame,
   createGameRelease,
   restoreContentPack,
   restoreGame,
+  setGameCover,
+  setGameHero,
   setPlatformActive,
+  setPlatformIcon,
   updateGameRelease,
   updatePlatform,
 } from "./catalog-commands";
@@ -39,6 +45,7 @@ const platform: AdminPlatform = {
   slug: "playstation-5",
   sortOrder: 1,
   isActive: true,
+  iconPath: null,
 };
 
 const release: AdminGameRelease = {
@@ -75,11 +82,14 @@ function repository(overrides: Partial<CatalogRepository> = {}): CatalogReposito
     createGame: vi.fn().mockResolvedValue({ id: game.id }),
     updateGame: vi.fn(),
     setGameStatus: vi.fn(),
+    setGameCoverPath: vi.fn(),
+    setGameHeroPath: vi.fn(),
     listPlatforms: vi.fn().mockResolvedValue([platform]),
     findPlatform: vi.fn().mockResolvedValue(platform),
     createPlatform: vi.fn().mockResolvedValue({ id: platform.id }),
     updatePlatform: vi.fn(),
     setPlatformActive: vi.fn(),
+    setPlatformIconPath: vi.fn(),
     listGameReleases: vi.fn().mockResolvedValue([release]),
     findGameRelease: vi.fn().mockResolvedValue(release),
     createGameRelease: vi.fn().mockResolvedValue({ id: release.id }),
@@ -242,5 +252,28 @@ describe("catalog commands", () => {
       contentPack.id,
       "active",
     );
+  });
+
+  it("assigns and clears trusted Game media paths with editor permission", async () => {
+    const repo = repository();
+    const context = { roles: ["editor"] as const, repository: repo };
+    await setGameCover(context, game.id, "editorial/cover/asset.png");
+    await setGameHero(context, game.id, "editorial/hero/asset.webp");
+    await clearGameCover(context, game.id);
+    await clearGameHero(context, game.id);
+    expect(repo.setGameCoverPath).toHaveBeenNthCalledWith(1, game.id, "editorial/cover/asset.png");
+    expect(repo.setGameCoverPath).toHaveBeenNthCalledWith(2, game.id, null);
+    expect(repo.setGameHeroPath).toHaveBeenNthCalledWith(1, game.id, "editorial/hero/asset.webp");
+    expect(repo.setGameHeroPath).toHaveBeenNthCalledWith(2, game.id, null);
+  });
+
+  it("keeps Platform icon assignment admin-only", async () => {
+    const repo = repository();
+    await expect(setPlatformIcon({ roles: ["editor"], repository: repo }, platform.id, "editorial/icon.png")).rejects.toMatchObject({ code: "forbidden" });
+    const admin = { roles: ["admin"] as const, repository: repo };
+    await setPlatformIcon(admin, platform.id, "editorial/icon.png");
+    await clearPlatformIcon(admin, platform.id);
+    expect(repo.setPlatformIconPath).toHaveBeenNthCalledWith(1, platform.id, "editorial/icon.png");
+    expect(repo.setPlatformIconPath).toHaveBeenNthCalledWith(2, platform.id, null);
   });
 });

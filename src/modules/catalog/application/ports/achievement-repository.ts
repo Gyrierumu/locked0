@@ -91,6 +91,11 @@ export interface AchievementRepository {
     achievementId: string,
     status: "active" | "archived",
   ): Promise<void>;
+  setAchievementIconPath(
+    achievementSetId: string,
+    achievementId: string,
+    storagePath: string | null,
+  ): Promise<void>;
   listAchievementSlugs(
     groupIds: readonly string[],
   ): Promise<readonly Readonly<{ groupId: string; slug: string }>[] >;

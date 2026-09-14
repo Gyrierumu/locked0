@@ -18,11 +18,13 @@ import { AchievementRow } from "./achievement-row.client";
 
 type AchievementManagerProps = Readonly<{
   gameId: string;
+  gameName: string;
   achievementSetId: string;
   groups: readonly AdminAchievementGroup[];
   achievements: PaginatedResult<AdminAchievement>;
   query: AdminAchievementListQuery;
   canManage: boolean;
+  iconPreviewUrls: Readonly<Record<string, string>>;
 }>;
 
 function pageHref(gameId: string, achievementSetId: string, query: AdminAchievementListQuery, page: number): string {
@@ -35,7 +37,7 @@ function pageHref(gameId: string, achievementSetId: string, query: AdminAchievem
   return `${routes.adminGameAchievementSet(gameId, achievementSetId)}?${params}`;
 }
 
-export function AchievementManager({ gameId, achievementSetId, groups, achievements, query, canManage }: AchievementManagerProps) {
+export function AchievementManager({ gameId, gameName, achievementSetId, groups, achievements, query, canManage, iconPreviewUrls }: AchievementManagerProps) {
   return (
     <section aria-labelledby="achievements-heading">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -87,8 +89,10 @@ export function AchievementManager({ gameId, achievementSetId, groups, achieveme
                   achievement={achievement}
                   groups={groups}
                   gameId={gameId}
+                  gameName={gameName}
                   achievementSetId={achievementSetId}
                   canManage={canManage}
+                  iconPreviewUrl={achievement.iconPath ? iconPreviewUrls[achievement.iconPath] ?? null : null}
                   displayPosition={(achievements.page - 1) * achievements.pageSize + index + 1}
                 />
               ))}

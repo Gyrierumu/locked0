@@ -22,12 +22,15 @@ export interface CatalogRepository {
   createGame(input: CreateGameInput): Promise<{ id: string }>;
   updateGame(id: string, input: GameMetadataInput): Promise<void>;
   setGameStatus(id: string, status: GameStatus): Promise<void>;
+  setGameCoverPath(id: string, storagePath: string | null): Promise<void>;
+  setGameHeroPath(id: string, storagePath: string | null): Promise<void>;
 
   listPlatforms(options?: Readonly<{ activeOnly?: boolean }>): Promise<readonly AdminPlatform[]>;
   findPlatform(id: string): Promise<AdminPlatform | null>;
   createPlatform(input: PlatformInput): Promise<{ id: string }>;
   updatePlatform(id: string, input: PlatformInput): Promise<void>;
   setPlatformActive(id: string, isActive: boolean): Promise<void>;
+  setPlatformIconPath(id: string, storagePath: string | null): Promise<void>;
 
   listGameReleases(gameId: string): Promise<readonly AdminGameRelease[]>;
   findGameRelease(gameId: string, releaseId: string): Promise<AdminGameRelease | null>;
@@ -52,4 +55,3 @@ export interface CatalogRepository {
     status: GameStatus,
   ): Promise<void>;
 }
-

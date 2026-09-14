@@ -140,7 +140,10 @@ export function AdminShell({ actor, children }: AdminShellProps) {
                 System
               </p>
               <div className="mt-2">
-                <PlannedItem label="Media" icon={ImageIcon} />
+                <AdminNavLink href={routes.adminMedia}>
+                  <ImageIcon className="size-4" aria-hidden="true" />
+                  Media
+                </AdminNavLink>
               </div>
             </div>
           </nav>

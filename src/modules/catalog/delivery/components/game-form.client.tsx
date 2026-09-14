@@ -153,15 +153,6 @@ export function GameForm({ game, readOnly = false }: GameFormProps) {
         </div>
       </Card>
 
-      {mode === "edit" ? (
-        <Card className="p-5 sm:p-6">
-          <h2 className="text-sm font-semibold">Mídia</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Cover e Hero poderão ser gerenciados quando o Media Manager estiver habilitado.
-          </p>
-        </Card>
-      ) : null}
-
       {readOnly ? (
         <p className="text-sm text-muted-foreground">
           Seu perfil possui acesso somente para leitura deste catálogo.
@@ -181,4 +172,3 @@ export function GameForm({ game, readOnly = false }: GameFormProps) {
     </form>
   );
 }
-

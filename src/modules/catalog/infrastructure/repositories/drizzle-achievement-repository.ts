@@ -546,6 +546,19 @@ function buildDrizzleAchievementRepository(
       if (rows.length === 0) throw new CatalogError("not_found");
     },
 
+    async setAchievementIconPath(achievementSetId, achievementId, storagePath) {
+      const groupIds = getDatabase()
+        .select({ id: achievementGroups.id })
+        .from(achievementGroups)
+        .where(eq(achievementGroups.achievementSetId, achievementSetId));
+      const rows = await getDatabase()
+        .update(achievements)
+        .set({ iconPath: storagePath, updatedAt: new Date() })
+        .where(and(eq(achievements.id, achievementId), inArray(achievements.achievementGroupId, groupIds)))
+        .returning({ id: achievements.id });
+      if (rows.length === 0) throw new CatalogError("not_found");
+    },
+
     async listAchievementSlugs(groupIds) {
       if (groupIds.length === 0) return [];
       return getDatabase()

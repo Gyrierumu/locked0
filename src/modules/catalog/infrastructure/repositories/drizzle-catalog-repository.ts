@@ -4,6 +4,7 @@ import { and, asc, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 
 import { getDb } from "@/db/client";
 import { contentPacks, gameReleases, games, platforms } from "@/db/schema";
+import { supavisorPipelineGuard } from "@/db/supavisor";
 
 import type {
   AdminContentPack,
@@ -96,7 +97,7 @@ function buildDrizzleCatalogRepository(getDatabase: () => CatalogDatabase): Cata
           )
         : undefined,
     ];
-    const where = and(...conditions);
+    const where = and(supavisorPipelineGuard(), ...conditions);
 
     const totals = await database.select({ total: count() }).from(games).where(where);
     const total = totals[0]?.total ?? 0;
@@ -224,9 +225,12 @@ function buildDrizzleCatalogRepository(getDatabase: () => CatalogDatabase): Cata
         slug: platforms.slug,
         sortOrder: platforms.sortOrder,
         isActive: platforms.isActive,
+        iconPath: platforms.iconPath,
       })
       .from(platforms)
-      .where(options?.activeOnly ? eq(platforms.isActive, true) : undefined)
+      .where(
+        and(supavisorPipelineGuard(), options?.activeOnly ? eq(platforms.isActive, true) : undefined),
+      )
       .orderBy(asc(platforms.sortOrder), asc(platforms.name));
     return rows satisfies AdminPlatform[];
   },
@@ -240,6 +244,7 @@ function buildDrizzleCatalogRepository(getDatabase: () => CatalogDatabase): Cata
         slug: platforms.slug,
         sortOrder: platforms.sortOrder,
         isActive: platforms.isActive,
+        iconPath: platforms.iconPath,
       })
       .from(platforms)
       .where(eq(platforms.id, id))
@@ -276,6 +281,33 @@ function buildDrizzleCatalogRepository(getDatabase: () => CatalogDatabase): Cata
     const rows = await getDatabase()
       .update(platforms)
       .set({ isActive, updatedAt: new Date() })
+      .where(eq(platforms.id, id))
+      .returning({ id: platforms.id });
+    if (rows.length === 0) throw new CatalogError("not_found");
+  },
+
+  async setGameCoverPath(id, storagePath) {
+    const rows = await getDatabase()
+      .update(games)
+      .set({ coverPath: storagePath, updatedAt: new Date() })
+      .where(eq(games.id, id))
+      .returning({ id: games.id });
+    if (rows.length === 0) throw new CatalogError("not_found");
+  },
+
+  async setGameHeroPath(id, storagePath) {
+    const rows = await getDatabase()
+      .update(games)
+      .set({ heroPath: storagePath, updatedAt: new Date() })
+      .where(eq(games.id, id))
+      .returning({ id: games.id });
+    if (rows.length === 0) throw new CatalogError("not_found");
+  },
+
+  async setPlatformIconPath(id, storagePath) {
+    const rows = await getDatabase()
+      .update(platforms)
+      .set({ iconPath: storagePath, updatedAt: new Date() })
       .where(eq(platforms.id, id))
       .returning({ id: platforms.id });
     if (rows.length === 0) throw new CatalogError("not_found");

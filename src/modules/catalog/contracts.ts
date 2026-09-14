@@ -61,6 +61,7 @@ export type AdminPlatform = Readonly<{
   slug: string;
   sortOrder: number;
   isActive: boolean;
+  iconPath: string | null;
 }>;
 
 export type AdminGameRelease = Readonly<{

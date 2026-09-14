@@ -1,19 +1,30 @@
 import { Pencil, Plus } from "lucide-react";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import type { MediaScopeGame } from "@/modules/media/contracts";
+import { CatalogMediaField } from "@/modules/media/ui";
 
 import type { AdminPlatform, CatalogCapabilities } from "../../contracts";
-import { setPlatformActiveAction } from "../actions/catalog-actions";
+import {
+  clearPlatformIconAction,
+  setPlatformActiveAction,
+  setPlatformIconAction,
+} from "../actions/catalog-actions";
 import { LifecycleAction } from "./lifecycle-action.client";
 import { PlatformForm } from "./platform-form.client";
 
 export function PlatformList({
   capabilities,
   platforms,
+  games,
+  previewUrls,
 }: Readonly<{
   capabilities: CatalogCapabilities;
   platforms: readonly AdminPlatform[];
+  games: readonly MediaScopeGame[];
+  previewUrls: Readonly<Record<string, string>>;
 }>) {
   return (
     <div className="mx-auto max-w-5xl">
@@ -52,7 +63,13 @@ export function PlatformList({
           {platforms.map((platform) => (
             <article key={platform.id} className="rounded-xl border border-border bg-card p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
+                <div className="flex min-w-0 gap-4">
+                  <div className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
+                    {platform.iconPath && previewUrls[platform.iconPath] ? (
+                      <Image src={previewUrls[platform.iconPath]} alt={`Icone de ${platform.name}`} fill sizes="64px" className="object-contain" />
+                    ) : <div className="flex size-full items-center justify-center text-xs text-muted-foreground">Sem icon</div>}
+                  </div>
+                  <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-lg font-semibold">{platform.name}</h2>
                     <Badge tone={platform.isActive ? "success" : "warning"}>
@@ -73,6 +90,7 @@ export function PlatformList({
                       <dd className="mt-1">{platform.sortOrder}</dd>
                     </div>
                   </dl>
+                  </div>
                 </div>
                 {capabilities.canManagePlatforms ? (
                   <details className="sm:max-w-3xl">
@@ -81,6 +99,16 @@ export function PlatformList({
                       Editar
                     </summary>
                     <div className="mt-5 space-y-6 border-t border-border pt-5">
+                      <div>
+                        <h3 className="mb-3 text-sm font-semibold">Icone</h3>
+                        <CatalogMediaField
+                          label={`icone de ${platform.name}`}
+                          games={games}
+                          currentPreviewUrl={platform.iconPath ? previewUrls[platform.iconPath] ?? null : null}
+                          selectAction={setPlatformIconAction.bind(null, platform.id)}
+                          clearAction={clearPlatformIconAction.bind(null, platform.id)}
+                        />
+                      </div>
                       <PlatformForm platform={platform} />
                       <div className="border-t border-border pt-5">
                         <LifecycleAction
@@ -110,4 +138,3 @@ export function PlatformList({
     </div>
   );
 }
-

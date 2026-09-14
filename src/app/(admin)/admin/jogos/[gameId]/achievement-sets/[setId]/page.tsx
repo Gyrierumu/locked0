@@ -16,6 +16,7 @@ import {
   AchievementSetOverview,
   AchievementSetWorkspace,
 } from "@/modules/catalog/ui";
+import { resolvePublicMediaPaths } from "@/modules/media/server";
 
 export const metadata: Metadata = { title: "Achievement Set" };
 
@@ -38,6 +39,9 @@ export default async function AchievementSetPage({ params, searchParams }: Achie
     view === "achievements" ? listAchievements(gameId, setId, query) : Promise.resolve(null),
   ]);
   if (!game || !achievementSet) notFound();
+  const iconPreviewUrls = await resolvePublicMediaPaths(
+    achievementResult?.items.map((achievement) => achievement.iconPath) ?? [],
+  );
 
   let content;
   if (view === "groups") {
@@ -55,11 +59,13 @@ export default async function AchievementSetPage({ params, searchParams }: Achie
     content = (
       <AchievementManager
         gameId={gameId}
+        gameName={game.name}
         achievementSetId={setId}
         groups={achievementSet.groups}
         achievements={achievementResult}
         query={query}
         canManage={capabilities.canManageAchievements}
+        iconPreviewUrls={iconPreviewUrls}
       />
     );
   } else {

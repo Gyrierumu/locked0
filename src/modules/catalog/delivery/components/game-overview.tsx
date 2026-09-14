@@ -1,14 +1,34 @@
 import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import { CatalogMediaField } from "@/modules/media/ui";
+import type { MediaScopeGame } from "@/modules/media/contracts";
 
 import type { AdminGame, CatalogCapabilities } from "../../contracts";
-import { archiveGameAction, restoreGameAction } from "../actions/catalog-actions";
+import {
+  archiveGameAction,
+  clearGameCoverAction,
+  clearGameHeroAction,
+  restoreGameAction,
+  setGameCoverAction,
+  setGameHeroAction,
+} from "../actions/catalog-actions";
 import { GameForm } from "./game-form.client";
 import { LifecycleAction } from "./lifecycle-action.client";
 
 export function GameOverview({
   capabilities,
   game,
-}: Readonly<{ capabilities: CatalogCapabilities; game: AdminGame }>) {
+  games,
+  coverPreviewUrl,
+  heroPreviewUrl,
+}: Readonly<{
+  capabilities: CatalogCapabilities;
+  game: AdminGame;
+  games: readonly MediaScopeGame[];
+  coverPreviewUrl: string | null;
+  heroPreviewUrl: string | null;
+}>) {
+  const contextGame = { id: game.id, name: game.name };
   return (
     <div className="space-y-8">
       <section aria-labelledby="game-data-heading">
@@ -21,6 +41,41 @@ export function GameOverview({
           </p>
         </div>
         <GameForm game={game} readOnly={!capabilities.canManageGames} />
+      </section>
+
+      <section aria-labelledby="game-media-heading">
+        <div className="mb-4">
+          <h2 id="game-media-heading" className="text-lg font-semibold">Midia do jogo</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Cover e hero usam assets validados da biblioteca do LOCKED:0.</p>
+        </div>
+        <div className="grid gap-5 md:grid-cols-2">
+          <Card className="p-5 sm:p-6">
+            <h3 className="mb-4 font-semibold">Cover</h3>
+            {capabilities.canManageGames ? (
+              <CatalogMediaField
+                label="cover"
+                contextGame={contextGame}
+                games={games}
+                currentPreviewUrl={coverPreviewUrl}
+                selectAction={setGameCoverAction.bind(null, game.id)}
+                clearAction={clearGameCoverAction.bind(null, game.id)}
+              />
+            ) : <ReadOnlyMedia label="Cover" previewUrl={coverPreviewUrl} />}
+          </Card>
+          <Card className="p-5 sm:p-6">
+            <h3 className="mb-4 font-semibold">Hero</h3>
+            {capabilities.canManageGames ? (
+              <CatalogMediaField
+                label="hero"
+                contextGame={contextGame}
+                games={games}
+                currentPreviewUrl={heroPreviewUrl}
+                selectAction={setGameHeroAction.bind(null, game.id)}
+                clearAction={clearGameHeroAction.bind(null, game.id)}
+              />
+            ) : <ReadOnlyMedia label="Hero" previewUrl={heroPreviewUrl} />}
+          </Card>
+        </div>
       </section>
 
       {capabilities.canManageGameLifecycle ? (
@@ -59,3 +114,10 @@ export function GameOverview({
   );
 }
 
+function ReadOnlyMedia({ label, previewUrl }: Readonly<{ label: string; previewUrl: string | null }>) {
+  return previewUrl ? (
+    <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-muted">
+      <Image src={previewUrl} alt={`${label} atual`} fill sizes="384px" className="object-contain" />
+    </div>
+  ) : <p className="text-sm text-muted-foreground">Nenhum asset selecionado.</p>;
+}

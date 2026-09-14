@@ -45,6 +45,7 @@ function repository(): AchievementRepository {
     moveAchievementToGroup: vi.fn(),
     setAchievementPosition: vi.fn(),
     setAchievementStatus: vi.fn(),
+    setAchievementIconPath: vi.fn(),
     listAchievementSlugs: vi.fn(),
   };
 }

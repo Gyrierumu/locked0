@@ -92,6 +92,34 @@ export function restoreGame(context: CommandContext, gameId: string) {
   return setGameStatus(context, gameId, "active");
 }
 
+async function setGameMediaPath(
+  context: CommandContext,
+  gameId: string,
+  slot: "cover" | "hero",
+  storagePath: string | null,
+): Promise<void> {
+  assertCatalogPermission(context.roles, "manage_game");
+  await requireGame(context, gameId);
+  if (slot === "cover") await context.repository.setGameCoverPath(gameId, storagePath);
+  else await context.repository.setGameHeroPath(gameId, storagePath);
+}
+
+export function setGameCover(context: CommandContext, gameId: string, storagePath: string) {
+  return setGameMediaPath(context, gameId, "cover", storagePath);
+}
+
+export function clearGameCover(context: CommandContext, gameId: string) {
+  return setGameMediaPath(context, gameId, "cover", null);
+}
+
+export function setGameHero(context: CommandContext, gameId: string, storagePath: string) {
+  return setGameMediaPath(context, gameId, "hero", storagePath);
+}
+
+export function clearGameHero(context: CommandContext, gameId: string) {
+  return setGameMediaPath(context, gameId, "hero", null);
+}
+
 export function createPlatform(context: CommandContext, input: PlatformInput) {
   assertCatalogPermission(context.roles, "manage_platform");
   return context.repository.createPlatform({
@@ -127,6 +155,28 @@ export async function setPlatformActive(
   assertCatalogPermission(context.roles, "manage_platform");
   if (!(await context.repository.findPlatform(platformId))) throw new CatalogError("not_found");
   await context.repository.setPlatformActive(platformId, isActive);
+}
+
+async function setPlatformMediaPath(
+  context: CommandContext,
+  platformId: string,
+  storagePath: string | null,
+): Promise<void> {
+  assertCatalogPermission(context.roles, "manage_platform");
+  if (!(await context.repository.findPlatform(platformId))) throw new CatalogError("not_found");
+  await context.repository.setPlatformIconPath(platformId, storagePath);
+}
+
+export function setPlatformIcon(
+  context: CommandContext,
+  platformId: string,
+  storagePath: string,
+) {
+  return setPlatformMediaPath(context, platformId, storagePath);
+}
+
+export function clearPlatformIcon(context: CommandContext, platformId: string) {
+  return setPlatformMediaPath(context, platformId, null);
 }
 
 export async function createGameRelease(

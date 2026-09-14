@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import type { ZodError } from "zod";
 
 import { routes } from "@/config/routes";
+import { getSelectableMediaAsset } from "@/modules/media/server";
 
 import {
   applyAchievementPaste,
   archiveAchievement,
+  clearAchievementIcon,
   createAchievement,
   createAchievementGroup,
   createAchievementSet,
@@ -17,6 +19,7 @@ import {
   reorderAchievementGroups,
   replaceAchievementSetReleases,
   restoreAchievement,
+  setAchievementIcon,
   updateAchievement,
   updateAchievementGroup,
   updateAchievementSet,
@@ -308,6 +311,43 @@ export async function restoreAchievementAction(
 ): Promise<CatalogFormState> {
   void _previousState;
   return achievementLifecycleAction(gameId, achievementSetId, achievementId, true);
+}
+
+export async function setAchievementIconAction(
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+  assetId: string,
+): Promise<CatalogFormState> {
+  if (!validIds(gameId, achievementSetId, achievementId, assetId)) return invalidResource();
+  try {
+    const asset = await getSelectableMediaAsset(assetId);
+    await setAchievementIcon(
+      gameId,
+      achievementSetId,
+      achievementId,
+      asset.storagePath,
+    );
+    refreshAchievementWorkspace(gameId, achievementSetId);
+    return { status: "success", message: "Icone atualizado." };
+  } catch (error) {
+    return achievementActionError(error);
+  }
+}
+
+export async function clearAchievementIconAction(
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+): Promise<CatalogFormState> {
+  if (!validIds(gameId, achievementSetId, achievementId)) return invalidResource();
+  try {
+    await clearAchievementIcon(gameId, achievementSetId, achievementId);
+    refreshAchievementWorkspace(gameId, achievementSetId);
+    return { status: "success", message: "Icone removido." };
+  } catch (error) {
+    return achievementActionError(error);
+  }
 }
 
 function pasteFormData(formData: FormData) {

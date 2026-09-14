@@ -6,18 +6,26 @@ import type { ZodError } from "zod";
 
 import { routes } from "@/config/routes";
 import { ForbiddenError, UnauthenticatedError } from "@/modules/identity/contracts";
+import { MediaError } from "@/modules/media/contracts";
+import { getSelectableMediaAsset } from "@/modules/media/server";
 
 import { CatalogError } from "../../domain/errors";
 import {
   archiveContentPack,
   archiveGame,
+  clearGameCover,
+  clearGameHero,
+  clearPlatformIcon,
   createContentPack,
   createGame,
   createGameRelease,
   createPlatform,
   restoreContentPack,
   restoreGame,
+  setGameCover,
+  setGameHero,
   setPlatformActive,
+  setPlatformIcon,
   updateContentPack,
   updateGameMetadata,
   updateGameRelease,
@@ -52,6 +60,9 @@ function validationError(error: ZodError): CatalogFormState {
 
 function actionError(error: unknown): CatalogFormState {
   if (error instanceof CatalogError) {
+    return { status: "error", message: error.message };
+  }
+  if (error instanceof MediaError) {
     return { status: "error", message: error.message };
   }
   if (error instanceof ForbiddenError || error instanceof UnauthenticatedError) {
@@ -156,6 +167,50 @@ export async function restoreGameAction(
   }
 }
 
+async function assignGameMedia(
+  gameId: string,
+  assetId: string | null,
+  slot: "cover" | "hero",
+): Promise<CatalogFormState> {
+  if (
+    !catalogIdSchema.safeParse(gameId).success ||
+    (assetId !== null && !catalogIdSchema.safeParse(assetId).success)
+  ) {
+    return invalidResource();
+  }
+  try {
+    if (assetId === null) {
+      if (slot === "cover") await clearGameCover(gameId);
+      else await clearGameHero(gameId);
+    } else {
+      const asset = await getSelectableMediaAsset(assetId);
+      if (slot === "cover") await setGameCover(gameId, asset.storagePath);
+      else await setGameHero(gameId, asset.storagePath);
+    }
+    revalidatePath(routes.adminGames);
+    revalidatePath(routes.adminGame(gameId));
+    return { status: "success", message: slot === "cover" ? "Cover atualizado." : "Hero atualizado." };
+  } catch (error) {
+    return actionError(error);
+  }
+}
+
+export async function setGameCoverAction(gameId: string, assetId: string) {
+  return assignGameMedia(gameId, assetId, "cover");
+}
+
+export async function clearGameCoverAction(gameId: string) {
+  return assignGameMedia(gameId, null, "cover");
+}
+
+export async function setGameHeroAction(gameId: string, assetId: string) {
+  return assignGameMedia(gameId, assetId, "hero");
+}
+
+export async function clearGameHeroAction(gameId: string) {
+  return assignGameMedia(gameId, null, "hero");
+}
+
 function platformFormData(formData: FormData) {
   return {
     name: formData.get("name"),
@@ -213,6 +268,34 @@ export async function setPlatformActiveAction(
       status: "success",
       message: isActive ? "Plataforma reativada." : "Plataforma desativada.",
     };
+  } catch (error) {
+    return actionError(error);
+  }
+}
+
+export async function setPlatformIconAction(
+  platformId: string,
+  assetId: string,
+): Promise<CatalogFormState> {
+  if (!catalogIdSchema.safeParse(platformId).success || !catalogIdSchema.safeParse(assetId).success) {
+    return invalidResource();
+  }
+  try {
+    const asset = await getSelectableMediaAsset(assetId);
+    await setPlatformIcon(platformId, asset.storagePath);
+    revalidatePath(routes.adminPlatforms);
+    return { status: "success", message: "Icone atualizado." };
+  } catch (error) {
+    return actionError(error);
+  }
+}
+
+export async function clearPlatformIconAction(platformId: string): Promise<CatalogFormState> {
+  if (!catalogIdSchema.safeParse(platformId).success) return invalidResource();
+  try {
+    await clearPlatformIcon(platformId);
+    revalidatePath(routes.adminPlatforms);
+    return { status: "success", message: "Icone removido." };
   } catch (error) {
     return actionError(error);
   }

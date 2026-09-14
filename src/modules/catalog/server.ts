@@ -24,6 +24,8 @@ import {
   reorderAchievementGroups as reorderAchievementGroupsCommand,
   replaceAchievementSetReleases as replaceAchievementSetReleasesCommand,
   restoreAchievement as restoreAchievementCommand,
+  setAchievementIcon as setAchievementIconCommand,
+  clearAchievementIcon as clearAchievementIconCommand,
   updateAchievement as updateAchievementCommand,
   updateAchievementGroup as updateAchievementGroupCommand,
   updateAchievementSet as updateAchievementSetCommand,
@@ -37,13 +39,19 @@ import {
 import {
   archiveContentPack as archiveContentPackCommand,
   archiveGame as archiveGameCommand,
+  clearGameCover as clearGameCoverCommand,
+  clearGameHero as clearGameHeroCommand,
+  clearPlatformIcon as clearPlatformIconCommand,
   createContentPack as createContentPackCommand,
   createGame as createGameCommand,
   createGameRelease as createGameReleaseCommand,
   createPlatform as createPlatformCommand,
   restoreContentPack as restoreContentPackCommand,
   restoreGame as restoreGameCommand,
+  setGameCover as setGameCoverCommand,
+  setGameHero as setGameHeroCommand,
   setPlatformActive as setPlatformActiveCommand,
+  setPlatformIcon as setPlatformIconCommand,
   updateContentPack as updateContentPackCommand,
   updateGameMetadata as updateGameMetadataCommand,
   updateGameRelease as updateGameReleaseCommand,
@@ -190,6 +198,22 @@ export async function restoreGame(gameId: string) {
   return restoreGameCommand(await commandContext("admin"), gameId);
 }
 
+export async function setGameCover(gameId: string, storagePath: string) {
+  return setGameCoverCommand(await commandContext("editor"), gameId, storagePath);
+}
+
+export async function clearGameCover(gameId: string) {
+  return clearGameCoverCommand(await commandContext("editor"), gameId);
+}
+
+export async function setGameHero(gameId: string, storagePath: string) {
+  return setGameHeroCommand(await commandContext("editor"), gameId, storagePath);
+}
+
+export async function clearGameHero(gameId: string) {
+  return clearGameHeroCommand(await commandContext("editor"), gameId);
+}
+
 export async function createPlatform(input: PlatformInput) {
   return createPlatformCommand(await commandContext("admin"), input);
 }
@@ -200,6 +224,14 @@ export async function updatePlatform(platformId: string, input: PlatformInput) {
 
 export async function setPlatformActive(platformId: string, isActive: boolean) {
   return setPlatformActiveCommand(await commandContext("admin"), platformId, isActive);
+}
+
+export async function setPlatformIcon(platformId: string, storagePath: string) {
+  return setPlatformIconCommand(await commandContext("admin"), platformId, storagePath);
+}
+
+export async function clearPlatformIcon(platformId: string) {
+  return clearPlatformIconCommand(await commandContext("admin"), platformId);
 }
 
 export async function createGameRelease(gameId: string, input: GameReleaseInput) {
@@ -385,6 +417,34 @@ export async function restoreAchievement(
   achievementId: string,
 ) {
   return restoreAchievementCommand(
+    await achievementCommandContext(),
+    gameId,
+    achievementSetId,
+    achievementId,
+  );
+}
+
+export async function setAchievementIcon(
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+  storagePath: string,
+) {
+  return setAchievementIconCommand(
+    await achievementCommandContext(),
+    gameId,
+    achievementSetId,
+    achievementId,
+    storagePath,
+  );
+}
+
+export async function clearAchievementIcon(
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+) {
+  return clearAchievementIconCommand(
     await achievementCommandContext(),
     gameId,
     achievementSetId,

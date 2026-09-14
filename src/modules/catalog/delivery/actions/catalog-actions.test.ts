@@ -11,11 +11,18 @@ const mocks = vi.hoisted(() => ({
   createGame: vi.fn(),
   createGameRelease: vi.fn(),
   createPlatform: vi.fn(),
+  clearGameCover: vi.fn(),
+  clearGameHero: vi.fn(),
+  clearPlatformIcon: vi.fn(),
+  getSelectableMediaAsset: vi.fn(),
   refresh: vi.fn(),
   restoreContentPack: vi.fn(),
   restoreGame: vi.fn(),
   revalidatePath: vi.fn(),
   setPlatformActive: vi.fn(),
+  setGameCover: vi.fn(),
+  setGameHero: vi.fn(),
+  setPlatformIcon: vi.fn(),
   updateContentPack: vi.fn(),
   updateGameMetadata: vi.fn(),
   updateGameRelease: vi.fn(),
@@ -31,6 +38,10 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
+vi.mock("@/modules/media/server", () => ({
+  getSelectableMediaAsset: mocks.getSelectableMediaAsset,
+}));
+
 vi.mock("../../server", () => ({
   archiveContentPack: mocks.archiveContentPack,
   archiveGame: mocks.archiveGame,
@@ -38,9 +49,15 @@ vi.mock("../../server", () => ({
   createGame: mocks.createGame,
   createGameRelease: mocks.createGameRelease,
   createPlatform: mocks.createPlatform,
+  clearGameCover: mocks.clearGameCover,
+  clearGameHero: mocks.clearGameHero,
+  clearPlatformIcon: mocks.clearPlatformIcon,
   restoreContentPack: mocks.restoreContentPack,
   restoreGame: mocks.restoreGame,
   setPlatformActive: mocks.setPlatformActive,
+  setGameCover: mocks.setGameCover,
+  setGameHero: mocks.setGameHero,
+  setPlatformIcon: mocks.setPlatformIcon,
   updateContentPack: mocks.updateContentPack,
   updateGameMetadata: mocks.updateGameMetadata,
   updateGameRelease: mocks.updateGameRelease,
@@ -49,9 +66,12 @@ vi.mock("../../server", () => ({
 
 import {
   archiveGameAction,
+  clearGameCoverAction,
   createContentPackAction,
   createGameReleaseAction,
   restoreGameAction,
+  setGameCoverAction,
+  setPlatformIconAction,
   updateGameAction,
 } from "./catalog-actions";
 
@@ -128,5 +148,18 @@ describe("catalog actions workspace refresh", () => {
     });
 
     expect(mocks.refresh).toHaveBeenCalledTimes(3);
+  });
+
+  it("resolves an active MediaAsset server-side instead of accepting a client storage path", async () => {
+    const assetId = "33333333-3333-4333-8333-333333333333";
+    mocks.getSelectableMediaAsset.mockResolvedValue({ id: assetId, storagePath: "editorial/trusted/asset.png" });
+    await expect(setGameCoverAction(gameId, assetId)).resolves.toMatchObject({ status: "success" });
+    expect(mocks.getSelectableMediaAsset).toHaveBeenCalledWith(assetId);
+    expect(mocks.setGameCover).toHaveBeenCalledWith(gameId, "editorial/trusted/asset.png");
+    await expect(clearGameCoverAction(gameId)).resolves.toMatchObject({ status: "success" });
+    expect(mocks.clearGameCover).toHaveBeenCalledWith(gameId);
+
+    await expect(setPlatformIconAction(platformId, assetId)).resolves.toMatchObject({ status: "success" });
+    expect(mocks.setPlatformIcon).toHaveBeenCalledWith(platformId, "editorial/trusted/asset.png");
   });
 });

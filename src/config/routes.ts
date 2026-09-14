@@ -17,4 +17,6 @@ export const routes = {
   adminGameAchievementSet: (gameId: string, achievementSetId: string) =>
     `/admin/jogos/${gameId}/achievement-sets/${achievementSetId}`,
   adminPlatforms: "/admin/plataformas",
+  adminMedia: "/admin/media",
+  adminMediaAsset: (assetId: string) => `/admin/media/${assetId}`,
 } as const;

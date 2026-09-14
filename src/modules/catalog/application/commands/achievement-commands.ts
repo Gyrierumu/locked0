@@ -384,6 +384,50 @@ export function restoreAchievement(
   return setAchievementLifecycle(context, gameId, achievementSetId, achievementId, "active");
 }
 
+async function setAchievementMediaPath(
+  context: CommandContext,
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+  storagePath: string | null,
+): Promise<void> {
+  assertCatalogPermission(context.roles, "manage_achievement");
+  await requireSet(context.repository, gameId, achievementSetId);
+  if (!(await context.repository.findAchievement(achievementSetId, achievementId))) {
+    throw new CatalogError("not_found");
+  }
+  await context.repository.setAchievementIconPath(
+    achievementSetId,
+    achievementId,
+    storagePath,
+  );
+}
+
+export function setAchievementIcon(
+  context: CommandContext,
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+  storagePath: string,
+) {
+  return setAchievementMediaPath(
+    context,
+    gameId,
+    achievementSetId,
+    achievementId,
+    storagePath,
+  );
+}
+
+export function clearAchievementIcon(
+  context: CommandContext,
+  gameId: string,
+  achievementSetId: string,
+  achievementId: string,
+) {
+  return setAchievementMediaPath(context, gameId, achievementSetId, achievementId, null);
+}
+
 function parseDelimitedLine(line: string, delimiter: string): string[] {
   const values: string[] = [];
   let current = "";

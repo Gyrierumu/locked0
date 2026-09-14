@@ -10,6 +10,7 @@ import type { AchievementRepository } from "../ports/achievement-repository";
 import {
   applyAchievementPaste,
   archiveAchievement,
+  clearAchievementIcon,
   createAchievement,
   createAchievementGroup,
   createAchievementSet,
@@ -17,6 +18,7 @@ import {
   previewAchievementPaste,
   reorderAchievementGroups,
   restoreAchievement,
+  setAchievementIcon,
   replaceAchievementSetReleases,
   updateAchievementSet,
   updateAchievement,
@@ -105,6 +107,7 @@ function repository(overrides: Partial<AchievementRepository> = {}): Achievement
     moveAchievementToGroup: vi.fn(),
     setAchievementPosition: vi.fn(),
     setAchievementStatus: vi.fn(),
+    setAchievementIconPath: vi.fn(),
     listAchievementSlugs: vi.fn().mockResolvedValue([]),
     ...overrides,
   };
@@ -272,6 +275,15 @@ describe("achievement commands", () => {
     await restoreAchievement(context, gameId, setId, "achievement-1");
     expect(repo.setAchievementStatus).toHaveBeenNthCalledWith(1, setId, "achievement-1", "archived");
     expect(repo.setAchievementStatus).toHaveBeenNthCalledWith(2, setId, "achievement-1", "active");
+  });
+
+  it("assigns and clears Achievement icons for editor+", async () => {
+    const repo = repository();
+    const context = { roles: ["editor"] as const, repository: repo };
+    await setAchievementIcon(context, gameId, setId, "achievement-1", "editorial/icon/asset.png");
+    await clearAchievementIcon(context, gameId, setId, "achievement-1");
+    expect(repo.setAchievementIconPath).toHaveBeenNthCalledWith(1, setId, "achievement-1", "editorial/icon/asset.png");
+    expect(repo.setAchievementIconPath).toHaveBeenNthCalledWith(2, setId, "achievement-1", null);
   });
 });
 

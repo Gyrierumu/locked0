@@ -2,16 +2,20 @@
 
 import { useActionState, useMemo, useRef } from "react";
 import { Save, Settings2, X } from "lucide-react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { CatalogMediaField } from "@/modules/media/ui";
 
 import type { AdminAchievement, AdminAchievementGroup } from "../../contracts";
 import {
   archiveAchievementAction,
+  clearAchievementIconAction,
   restoreAchievementAction,
+  setAchievementIconAction,
   updateAchievementAction,
 } from "../actions/achievement-actions";
 import { initialCatalogFormState, type CatalogFormState } from "../action-state";
@@ -23,9 +27,11 @@ type AchievementRowProps = Readonly<{
   achievement: AdminAchievement;
   groups: readonly AdminAchievementGroup[];
   gameId: string;
+  gameName: string;
   achievementSetId: string;
   canManage: boolean;
   displayPosition: number;
+  iconPreviewUrl: string | null;
 }>;
 
 const typeOptions = [
@@ -36,7 +42,7 @@ const typeOptions = [
   ["standard", "Padrão"],
 ] as const;
 
-export function AchievementRow({ achievement, groups, gameId, achievementSetId, canManage, displayPosition }: AchievementRowProps) {
+export function AchievementRow({ achievement, groups, gameId, gameName, achievementSetId, canManage, displayPosition, iconPreviewUrl }: AchievementRowProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const formId = `achievement-inline-${achievement.id}`;
   const action = useMemo(
@@ -61,7 +67,12 @@ export function AchievementRow({ achievement, groups, gameId, achievementSetId, 
     return (
       <tr key={revisionKey} className="border-b border-border last:border-0">
         <td className="px-3 py-3 font-mono text-xs text-muted-foreground">{String(displayPosition).padStart(2, "0")}</td>
-        <td className="px-3 py-3 font-medium">{achievement.name}</td>
+        <td className="px-3 py-3 font-medium">
+          <span className="flex items-center gap-3">
+            <AchievementIcon name={achievement.name} previewUrl={iconPreviewUrl} />
+            {achievement.name}
+          </span>
+        </td>
         <td className="px-3 py-3 capitalize">{achievement.achievementType}</td>
         <td className="px-3 py-3">{achievement.isHidden ? "Sim" : "Não"}</td>
         <td className="px-3 py-3">{achievement.points ?? "—"}</td>
@@ -79,7 +90,10 @@ export function AchievementRow({ achievement, groups, gameId, achievementSetId, 
         {String(displayPosition).padStart(2, "0")}
       </td>
       <td className="min-w-56 px-2 py-2">
-        <Input form={formId} name="name" defaultValue={achievement.name} disabled={pending} aria-label={`Nome de ${achievement.name}`} aria-invalid={state.fieldErrors?.name ? true : undefined} />
+        <div className="flex items-center gap-2">
+          <AchievementIcon name={achievement.name} previewUrl={iconPreviewUrl} />
+          <Input form={formId} name="name" defaultValue={achievement.name} disabled={pending} aria-label={`Nome de ${achievement.name}`} aria-invalid={state.fieldErrors?.name ? true : undefined} />
+        </div>
       </td>
       <td className="min-w-28 px-2 py-2">
         <Select form={formId} name="achievementType" defaultValue={achievement.achievementType} disabled={pending} aria-label={`Tipo de ${achievement.name}`} aria-invalid={state.fieldErrors?.achievementType ? true : undefined}>
@@ -121,6 +135,17 @@ export function AchievementRow({ achievement, groups, gameId, achievementSetId, 
             <Button type="button" variant="ghost" size="icon" onClick={() => dialogRef.current?.close()} aria-label="Fechar inspector"><X aria-hidden="true" /></Button>
           </div>
           <div className="flex-1 overflow-y-auto p-5">
+            <div className="mb-6 border-b border-border pb-6">
+              <h3 className="mb-3 text-sm font-semibold">Icone</h3>
+              <CatalogMediaField
+                label={`icone de ${achievement.name}`}
+                contextGame={{ id: gameId, name: gameName }}
+                games={[{ id: gameId, name: gameName }]}
+                currentPreviewUrl={iconPreviewUrl}
+                selectAction={setAchievementIconAction.bind(null, gameId, achievementSetId, achievement.id)}
+                clearAction={clearAchievementIconAction.bind(null, gameId, achievementSetId, achievement.id)}
+              />
+            </div>
             <InspectorForm action={action} achievement={achievement} groups={groups} />
             <div className="mt-6 border-t border-border pt-5">
               <LifecycleAction
@@ -135,6 +160,14 @@ export function AchievementRow({ achievement, groups, gameId, achievementSetId, 
         </dialog>
       </td>
     </tr>
+  );
+}
+
+function AchievementIcon({ name, previewUrl }: Readonly<{ name: string; previewUrl: string | null }>) {
+  return (
+    <span className="relative block size-9 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
+      {previewUrl ? <Image src={previewUrl} alt={`Icone de ${name}`} fill sizes="36px" className="object-contain" /> : null}
+    </span>
   );
 }
 
@@ -185,7 +218,7 @@ function InspectorForm({ action, achievement, groups }: Readonly<{
         <Button type="submit" disabled={pending}>{pending ? "Salvando…" : "Salvar detalhes"}</Button>
         <FormMessage status={state.status} message={state.message} />
       </div>
-      <p className="text-xs text-muted-foreground">Metadados externos e ícone são preservados, mas não são editáveis nesta etapa.</p>
+      <p className="text-xs text-muted-foreground">Metadados externos fora deste escopo permanecem preservados. O ícone pode ser editado acima.</p>
     </form>
   );
 }
